@@ -32,7 +32,7 @@ No Python code needed!
 
 Use this when you want to automatically fetch available versions from a metadata source.
 
-**Step 1:** Create `src/distributions/yourdistro.py`:
+**Step 1:** Create `src/ipxe_menu_gen/distributions/yourdistro.py`:
 
 ```python
 """Your Distribution metadata fetcher."""
@@ -46,7 +46,7 @@ from .base import AbstractMetadataFetcher
 
 
 class YourDistroMetadataFetcher(AbstractMetadataFetcher):
-    """Fetches version information for Your Distribution."""
+    """Fetches version information for Your Distribution."""""
     
     def fetch_versions(self, metadata_url: str, **filters) -> List[str]:
         """Fetch versions from metadata source.
@@ -75,7 +75,7 @@ class YourDistroMetadataFetcher(AbstractMetadataFetcher):
         return sorted(versions, reverse=True)
 ```
 
-**Step 2:** Register in `src/distributions/__init__.py`:
+**Step 2:** Register in `src/ipxe_menu_gen/distributions/__init__.py`:
 
 ```python
 from .yourdistro import YourDistroMetadataFetcher
@@ -184,22 +184,25 @@ distributions:
 ## Testing Your Distribution
 
 1. **Test with validation disabled** (fast iteration):
+
    ```bash
    make fast
    # or
-   python3 src/ipxe_menu_gen.py --no-validate
+   python3 -m ipxe_menu_gen --no-validate
    ```
 
 2. **Test with URL validation** (verify files exist):
+
    ```bash
    make validate
    # or
-   python3 src/ipxe_menu_gen.py
+   python3 -m ipxe_menu_gen
    ```
 
 3. **Write unit tests** in `tests/test_distributions.py`:
+
    ```python
-   from distributions import YourDistroMetadataFetcher
+   from ipxe_menu_gen.distributions import YourDistroMetadataFetcher
    
    def test_fetch_versions():
        fetcher = YourDistroMetadataFetcher()
@@ -212,16 +215,18 @@ distributions:
 
 ```
 src/
-├── ipxe_menu_gen.py          # Main program - orchestration only
-├── core/
-│   ├── models.py             # BootEntry, DistributionMenu
-│   ├── validator.py          # URL validation
-│   └── generator.py          # Jinja2 menu generation
-└── distributions/
-    ├── base.py               # AbstractMetadataFetcher (interface)
-    ├── __init__.py           # Registry (METADATA_PROVIDERS)
-    ├── fedora.py             # Fedora implementation
-    └── yourdistro.py         # Your implementation
+└── ipxe_menu_gen/            # Main package
+    ├── cli.py                # Command-line interface
+    ├── builder.py            # DistributionBuilder - orchestration
+    ├── core/
+    │   ├── models.py         # BootEntry, DistributionMenu
+    │   ├── validator.py      # URL validation
+    │   └── generator.py      # Jinja2 menu generation
+    └── distributions/
+        ├── base.py           # AbstractMetadataFetcher (interface)
+        ├── __init__.py       # Registry (METADATA_PROVIDERS)
+        ├── fedora.py         # Fedora implementation
+        └── yourdistro.py     # Your implementation
 ```
 
 ## Best Practices

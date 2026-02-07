@@ -32,10 +32,10 @@ install-dev: ## Install with dev dependencies
 
 clean: ## Remove generated files
 	rm -f menu.ipxe menu-custom.ipxe
-	rm -rf htmlcov/ .coverage .pytest_cache
+	rm -rf htmlcov/ .coverage .pytest_cache site/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-.PHONY: help all validate fast test test-coverage test-quick lint format build publish clean install install-dev
+.PHONY: help all validate fast test test-coverage test-quick lint format build publish clean install install-dev docs-lint docs-serve docs-build docs-deploy
 
 lint: ## Check code style
 	hatch run lint:check
@@ -48,3 +48,15 @@ build: ## Build distribution packages
 
 publish: ## Publish to PyPI
 	hatch publish
+
+docs-lint: ## Lint documentation
+	hatch run docs:lint
+
+docs-serve: ## Serve documentation locally
+	hatch run docs:serve
+
+docs-build: ## Build documentation
+	hatch run docs:build
+
+docs-deploy: ## Deploy documentation to GitHub Pages
+	mkdocs gh-deploy --force
