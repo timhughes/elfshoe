@@ -16,7 +16,7 @@ choose --default fedora_menu --timeout 30000 target && goto ${target}
 
 
 :fedora_menu
-menu Boot Fedora - Select Versionitem fedora_43 Fedora 43 Serveritem fedora_42 Fedora 42 Serveritem fedora_41 Fedora 41 Serveritem --gap --
+menu Boot Fedora - Select Versionitem fedora_43 Boot Fedora (multiple versions) 43item fedora_42 Boot Fedora (multiple versions) 42item fedora_41 Boot Fedora (multiple versions) 41item --gap --
 item back_fedora_menu Back to main menu
 choose --default fedora_43 target && goto ${target}
 :fedora_43
@@ -79,14 +79,11 @@ goto start
 
 
 
-:netboot
-chain --autofree http://boot.netboot.xyz || goto chain_error
+:netbootchain --autofree http://boot.netboot.xyz || goto chain_error
 
-:shell
-shell
+:shellshell
 
-:exit
-exit
+:exitexit
 
 :chain_error
 echo

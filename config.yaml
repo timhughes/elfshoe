@@ -13,6 +13,7 @@ distributions:
     enabled: true
     label: "Boot Fedora (multiple versions)"
     type: "dynamic"
+    metadata_provider: "fedora"  # Use Fedora metadata fetcher
     metadata_url: "https://fedoraproject.org/releases.json"
     metadata_filter:
       variant: "Server"
