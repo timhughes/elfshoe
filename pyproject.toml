@@ -42,15 +42,21 @@ dev = [
     "black>=23.0",
     "ruff>=0.1.0",
 ]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocs-minify-plugin>=0.7.0",
+    "pymarkdownlnt>=0.9.0",
+]
 
 [project.scripts]
 ipxe-menu-gen = "ipxe_menu_gen.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/ipxe-menu-generator"
-Documentation = "https://github.com/yourusername/ipxe-menu-generator/blob/main/README.md"
-Repository = "https://github.com/yourusername/ipxe-menu-generator"
-Issues = "https://github.com/yourusername/ipxe-menu-generator/issues"
+Homepage = "https://github.com/timhughes/ipxe-menu-gen"
+Documentation = "https://timhughes.github.io/ipxe-menu-gen/"
+Repository = "https://github.com/timhughes/ipxe-menu-gen"
+Issues = "https://github.com/timhughes/ipxe-menu-gen/issues"
 
 # Hatch build configuration
 [tool.hatch.build.targets.wheel]
@@ -86,6 +92,20 @@ format = [
     "black src tests",
     "ruff check --fix src tests",
 ]
+
+[tool.hatch.envs.docs]
+detached = true
+dependencies = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocs-minify-plugin>=0.7.0",
+    "pymarkdownlnt>=0.9.0",
+]
+
+[tool.hatch.envs.docs.scripts]
+lint = "pymarkdownlnt -c .pymarkdown.json scan docs/ || true"
+build = "pymarkdownlnt -c .pymarkdown.json scan docs/ || true && mkdocs build --clean"
+serve = "mkdocs serve --dev-addr localhost:8000"
 
 # Pytest configuration
 [tool.pytest.ini_options]
