@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ipxe-menu-generator"
+name = "elfshoe"
 version = "2.0.0"
-description = "A configurable iPXE boot menu generator with automatic version detection and URL validation"
+description = "Automated, validated, version-aware iPXE boot menu generation - where elves craft your network boot menus"
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
 authors = [
-    {name = "iPXE Menu Generator Contributors"}
+    {name = "elfshoe Contributors"}
 ]
-keywords = ["ipxe", "pxe", "boot", "menu", "network-boot"]
+keywords = ["ipxe", "pxe", "boot", "menu", "network-boot", "elfshoe"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: System Administrators",
@@ -50,17 +50,17 @@ docs = [
 ]
 
 [project.scripts]
-ipxe-menu-gen = "ipxe_menu_gen.cli:main"
+elfshoe = "elfshoe.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/timhughes/ipxe-menu-gen"
-Documentation = "https://timhughes.github.io/ipxe-menu-gen/"
-Repository = "https://github.com/timhughes/ipxe-menu-gen"
-Issues = "https://github.com/timhughes/ipxe-menu-gen/issues"
+Homepage = "https://github.com/timhughes/elfshoe"
+Documentation = "https://timhughes.github.io/elfshoe/"
+Repository = "https://github.com/timhughes/elfshoe"
+Issues = "https://github.com/timhughes/elfshoe/issues"
 
 # Hatch build configuration
 [tool.hatch.build.targets.wheel]
-packages = ["src/ipxe_menu_gen"]
+packages = ["src/elfshoe"]
 
 # Hatch environments
 [tool.hatch.envs.default]
@@ -73,8 +73,8 @@ dependencies = [
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests/}"
 test-cov = "pytest --cov=src --cov-report=html --cov-report=term {args:tests/}"
-validate = "python -m ipxe_menu_gen"
-fast = "python -m ipxe_menu_gen --no-validate --quiet"
+validate = "python -m elfshoe"
+fast = "python -m elfshoe --no-validate --quiet"
 
 [tool.hatch.envs.lint]
 detached = true

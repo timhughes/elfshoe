@@ -1,4 +1,4 @@
-# Project Status - iPXE Menu Generator v2.0
+# Project Status - elfshoe v2.0
 
 ## ✅ Complete
 
@@ -15,7 +15,7 @@
 
 ### Architecture (v2.0)
 
-- [x] Proper Python package structure (`src/ipxe_menu_gen/`)
+- [x] Proper Python package structure (`src/elfshoe/`)
 - [x] Modular design (core/, distributions/, templates/)
 - [x] Plugin system with AbstractMetadataFetcher
 - [x] Provider registry for metadata fetchers
@@ -79,11 +79,11 @@ hatch run lint:check       # Lint code
 
 ```bash
 # Install package
-pip install ipxe-menu-generator
+pip install elfshoeerator
 
 # Use command
-ipxe-menu-gen              # Generate menu
-ipxe-menu-gen --help       # Show options
+elfshoe              # Generate menu
+elfshoe --help       # Show options
 ```
 
 ### CI/CD
@@ -101,7 +101,7 @@ hatch publish              # Publish to PyPI
 ### Package Structure
 
 ```
-src/ipxe_menu_gen/
+src/elfshoe/
 ├── __init__.py           # Package exports
 ├── __main__.py           # Module entry point
 ├── cli.py                # CLI
@@ -207,7 +207,7 @@ cd ipxe
 pip install -e .
 
 # From PyPI (future)
-pip install ipxe-menu-generator
+pip install elfshoeerator
 
 # With hatch (development)
 hatch env create

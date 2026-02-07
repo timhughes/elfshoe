@@ -10,10 +10,10 @@ help:
 all: validate
 
 validate: ## Generate menu with URL validation
-	PYTHONPATH=src python3 -m ipxe_menu_gen
+	PYTHONPATH=src python3 -m elfshoe
 
 fast: ## Generate menu without validation
-	PYTHONPATH=src python3 -m ipxe_menu_gen --no-validate --quiet
+	PYTHONPATH=src python3 -m elfshoe --no-validate --quiet
 
 test: ## Run all tests
 	python3 -m pytest tests/ -v

@@ -32,7 +32,7 @@ No Python code needed!
 
 Use this when you want to automatically fetch available versions from a metadata source.
 
-**Step 1:** Create `src/ipxe_menu_gen/distributions/yourdistro.py`:
+**Step 1:** Create `src/elfshoe/distributions/yourdistro.py`:
 
 ```python
 """Your Distribution metadata fetcher."""
@@ -75,7 +75,7 @@ class YourDistroMetadataFetcher(AbstractMetadataFetcher):
         return sorted(versions, reverse=True)
 ```
 
-**Step 2:** Register in `src/ipxe_menu_gen/distributions/__init__.py`:
+**Step 2:** Register in `src/elfshoe/distributions/__init__.py`:
 
 ```python
 from .yourdistro import YourDistroMetadataFetcher
@@ -188,7 +188,7 @@ distributions:
    ```bash
    make fast
    # or
-   python3 -m ipxe_menu_gen --no-validate
+   python3 -m elfshoe --no-validate
    ```
 
 2. **Test with URL validation** (verify files exist):
@@ -196,13 +196,13 @@ distributions:
    ```bash
    make validate
    # or
-   python3 -m ipxe_menu_gen
+   python3 -m elfshoe
    ```
 
 3. **Write unit tests** in `tests/test_distributions.py`:
 
    ```python
-   from ipxe_menu_gen.distributions import YourDistroMetadataFetcher
+   from elfshoe.distributions import YourDistroMetadataFetcher
    
    def test_fetch_versions():
        fetcher = YourDistroMetadataFetcher()
@@ -215,7 +215,7 @@ distributions:
 
 ```
 src/
-└── ipxe_menu_gen/            # Main package
+└── elfshoe/            # Main package
     ├── cli.py                # Command-line interface
     ├── builder.py            # DistributionBuilder - orchestration
     ├── core/

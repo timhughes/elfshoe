@@ -1,8 +1,8 @@
-site_name: iPXE Menu Generator
-site_description: A flexible, configuration-driven iPXE boot menu generator
+site_name: elfshoe
+site_description: Automated iPXE boot menu generation - where elves craft your network boot menus
 site_author: Tim Hughes
-repo_url: https://github.com/timhughes/ipxe-menu-gen
-repo_name: timhughes/ipxe-menu-gen
+repo_url: https://github.com/timhughes/elfshoe
+repo_name: timhughes/elfshoe
 edit_uri: edit/main/docs/
 
 theme:

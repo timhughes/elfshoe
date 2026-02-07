@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock, Mock, patch
 
-from ipxe_menu_gen.core import URLValidator
+from elfshoe.core import URLValidator
 
 
 class TestURLValidator:

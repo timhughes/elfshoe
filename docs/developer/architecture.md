@@ -2,14 +2,14 @@
 
 ## Overview
 
-The iPXE Menu Generator uses a modular, plugin-based architecture that separates concerns and makes it easy to extend with new distributions.
+The elfshoe uses a modular, plugin-based architecture that separates concerns and makes it easy to extend with new distributions.
 
 ## Directory Structure
 
 ```
 ipxe/
 ├── src/
-│   └── ipxe_menu_gen/                # Main package
+│   └── elfshoe/                # Main package
 │       ├── __init__.py               # Package exports
 │       ├── __main__.py               # Module entry point (python -m)
 │       ├── cli.py                    # Command-line interface
@@ -30,7 +30,7 @@ ipxe/
 │           └── additional_items.ipxe.j2
 ├── tests/                            # Test suite
 │   ├── conftest.py                   # Pytest fixtures
-│   ├── test_ipxe_menu_gen.py        # Model tests
+│   ├── test_elfshoe.py        # Model tests
 │   ├── test_url_validator.py        # Validation tests
 │   └── test_menu_generator.py        # Generation tests
 ├── config.yaml                       # Main configuration
@@ -230,7 +230,7 @@ distributions:
 
 ### Unit Tests
 
-- `test_ipxe_menu_gen.py`: Test data models
+- `test_elfshoe.py`: Test data models
 - `test_url_validator.py`: Test URL validation (mocked)
 - `test_menu_generator.py`: Test menu generation
 
@@ -250,7 +250,7 @@ make fast
 make validate
 
 # Custom config
-python3 -m ipxe_menu_gen -c custom.yaml
+python3 -m elfshoe -c custom.yaml
 ```
 
 ## Extension Points
@@ -320,7 +320,7 @@ The refactoring (February 2026) moved from a monolithic design to modular:
 
 **Before** (monolithic file):
 
-- All code in single `ipxe_menu_gen.py` file (401 lines)
+- All code in single `elfshoe.py` file (401 lines)
 - `FedoraMetadataFetcher` hardcoded
 - String check for 'fedoraproject.org'
 
@@ -334,8 +334,8 @@ The refactoring (February 2026) moved from a monolithic design to modular:
 ### Breaking Changes
 
 - Import paths changed:
-  - `from ipxe_menu_gen import BootEntry` → `from core import BootEntry`
-  - `from ipxe_menu_gen import URLValidator` → `from core import URLValidator`
+  - `from elfshoe import BootEntry` → `from core import BootEntry`
+  - `from elfshoe import URLValidator` → `from core import URLValidator`
 - Config requires `metadata_provider` field for dynamic distributions
 - Tests updated to use new imports
 
