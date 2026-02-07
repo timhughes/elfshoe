@@ -10,10 +10,10 @@ help:
 all: validate
 
 validate: ## Generate menu with URL validation
-	python3 src/ipxe_menu_gen.py
+	PYTHONPATH=src python3 -m ipxe_menu_gen
 
 fast: ## Generate menu without validation
-	python3 src/ipxe_menu_gen.py --no-validate --quiet
+	PYTHONPATH=src python3 -m ipxe_menu_gen --no-validate --quiet
 
 test: ## Run all tests
 	python3 -m pytest tests/ -v
@@ -35,4 +35,16 @@ clean: ## Remove generated files
 	rm -rf htmlcov/ .coverage .pytest_cache
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-.PHONY: help all validate fast test test-coverage test-quick clean install install-dev
+.PHONY: help all validate fast test test-coverage test-quick lint format build publish clean install install-dev
+
+lint: ## Check code style
+	hatch run lint:check
+
+format: ## Format code
+	hatch run lint:format
+
+build: ## Build distribution packages
+	hatch build
+
+publish: ## Publish to PyPI
+	hatch publish

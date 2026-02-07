@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "ipxe-menu-generator"
@@ -8,7 +8,7 @@ version = "2.0.0"
 description = "A configurable iPXE boot menu generator with automatic version detection and URL validation"
 readme = "README.md"
 requires-python = ">=3.7"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "iPXE Menu Generator Contributors"}
 ]
@@ -26,6 +26,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 dependencies = [
@@ -43,7 +44,7 @@ dev = [
 ]
 
 [project.scripts]
-ipxe-menu-gen = "ipxe_menu_gen:main"
+ipxe-menu-gen = "ipxe_menu_gen.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/yourusername/ipxe-menu-generator"
@@ -51,20 +52,52 @@ Documentation = "https://github.com/yourusername/ipxe-menu-generator/blob/main/R
 Repository = "https://github.com/yourusername/ipxe-menu-generator"
 Issues = "https://github.com/yourusername/ipxe-menu-generator/issues"
 
-[tool.setuptools]
-packages = ["ipxe_menu_gen"]
+# Hatch build configuration
+[tool.hatch.build.targets.wheel]
+packages = ["src/ipxe_menu_gen"]
 
-[tool.setuptools.package-data]
-ipxe_menu_gen = ["templates/*.j2"]
+# Hatch environments
+[tool.hatch.envs.default]
+dependencies = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "pytest-mock>=3.10",
+]
 
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests/}"
+test-cov = "pytest --cov=src --cov-report=html --cov-report=term {args:tests/}"
+validate = "python -m ipxe_menu_gen"
+fast = "python -m ipxe_menu_gen --no-validate --quiet"
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+    "black>=23.0",
+    "ruff>=0.1.0",
+]
+
+[tool.hatch.envs.lint.scripts]
+check = [
+    "ruff check src tests",
+    "black --check src tests",
+]
+format = [
+    "black src tests",
+    "ruff check --fix src tests",
+]
+
+# Pytest configuration
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q --strict-markers"
 testpaths = ["tests"]
+pythonpath = ["src"]  # Tell pytest where to find the package
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
+# Coverage configuration
 [tool.coverage.run]
 source = ["src"]
 omit = ["*/tests/*", "*/test_*.py"]
@@ -81,11 +114,16 @@ exclude_lines = [
     "@(abc\\.)?abstractmethod",
 ]
 
+# Black configuration
 [tool.black]
 line-length = 100
 target-version = ['py37']
 
+# Ruff configuration
 [tool.ruff]
 line-length = 100
 target-version = "py37"
+
+[tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP"]
+
