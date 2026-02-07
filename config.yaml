@@ -1,0 +1,71 @@
+# iPXE Menu Generator Configuration
+
+# Main menu settings
+menu:
+  title: "Network Boot Menu"
+  default_item: "fedora_menu"
+  timeout: 30000  # milliseconds
+
+# Distribution configurations
+distributions:
+  fedora:
+    enabled: true
+    label: "Boot Fedora (multiple versions)"
+    type: "dynamic"
+    metadata_url: "https://fedoraproject.org/releases.json"
+    metadata_filter:
+      variant: "Server"
+      arch: "x86_64"
+    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/x86_64/os"
+    boot_files:
+      kernel: "images/pxeboot/vmlinuz"
+      initrd: "images/pxeboot/initrd.img"
+    boot_params: "inst.repo={base_url}/"
+    menu_label: "Fedora {version} Server"
+    
+  centos:
+    enabled: true
+    label: "Boot CentOS Stream (multiple versions)"
+    type: "static"
+    versions:
+      - version: "10"
+        label: "CentOS Stream 10"
+      - version: "9"
+        label: "CentOS Stream 9"
+    url_template: "http://mirror.stream.centos.org/{version}-stream/BaseOS/x86_64/os"
+    boot_files:
+      kernel: "images/pxeboot/vmlinuz"
+      initrd: "images/pxeboot/initrd.img"
+    boot_params: "inst.repo={base_url}/"
+    
+  debian:
+    enabled: true
+    label: "Boot Debian (multiple versions)"
+    type: "static"
+    versions:
+      - version: "bookworm"
+        label: "Debian 12 Bookworm (Stable)"
+        release_number: "12"
+      - version: "trixie"
+        label: "Debian 13 Trixie (Testing)"
+        release_number: "13"
+    url_template: "http://deb.debian.org/debian/dists/{version}/main/installer-amd64/current/images/netboot/debian-installer/amd64"
+    boot_files:
+      kernel: "linux"
+      initrd: "initrd.gz"
+    boot_params: ""
+
+# Additional menu items
+additional_items:
+  - id: "netboot"
+    label: "netboot.xyz"
+    type: "chain"
+    url: "http://boot.netboot.xyz"
+    
+  - id: "shell"
+    label: "iPXE Shell"
+    type: "shell"
+    
+  - id: "exit"
+    label: "Exit to BIOS"
+    type: "exit"
