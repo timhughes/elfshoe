@@ -1,0 +1,21 @@
+{# Additional Menu Items Template #}
+{%- for item in additional_items %}
+
+:{{ item.id }}
+{%- if item.type == 'chain' %}
+chain --autofree {{ item.url }} || goto chain_error
+{%- elif item.type == 'shell' %}
+shell
+{%- elif item.type == 'exit' %}
+exit
+{%- endif %}
+
+{% endfor %}
+{%- if additional_items | selectattr('type', 'equalto', 'chain') | list %}
+
+:chain_error
+echo
+echo Chain load failed! Press any key to return to menu...
+prompt --timeout {{ error_timeout }}
+goto start
+{%- endif %}

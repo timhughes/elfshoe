@@ -12,12 +12,18 @@ import sys
 import urllib.request
 from pathlib import Path
 from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 try:
     import yaml
 except ImportError:
     print("Error: PyYAML is required. Install with: pip install pyyaml", file=sys.stderr)
+    sys.exit(1)
+
+try:
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+except ImportError:
+    print("Error: Jinja2 is required. Install with: pip install jinja2", file=sys.stderr)
     sys.exit(1)
 
 
@@ -245,139 +251,67 @@ class DistributionBuilder:
 
 
 class MenuGenerator:
-    """Generates iPXE menu files."""
+    """Generates iPXE menu files using Jinja2 templates."""
     
-    def __init__(self, config: Dict[str, Any], template_path: Optional[Path] = None):
+    def __init__(self, config: Dict[str, Any], template_dir: Optional[Path] = None):
         self.config = config
-        self.template_path = template_path
-    
-    def generate_submenu(self, menu: DistributionMenu) -> str:
-        """Generate iPXE code for a distribution submenu."""
-        lines = [f":{menu.id}"]
-        lines.append(f"menu {menu.label.split('(')[0].strip()} - Select Version")
         
-        # Add menu items
-        for entry in menu.entries:
-            lines.append(f"item {entry.id} {entry.label}")
+        # Set up Jinja2 environment
+        if template_dir is None:
+            template_dir = Path(__file__).parent / 'templates'
         
-        lines.append("item --gap --")
-        lines.append(f"item back_{menu.id} Back to main menu")
-        lines.append(f"choose --default {menu.entries[0].id} target && goto ${{target}}")
-        lines.append("")
-        
-        # Add boot entries
-        for entry in menu.entries:
-            lines.append(f":{entry.id}")
-            
-            # Determine initrd parameter name based on file extension
-            initrd_name = "initrd.img" if entry.initrd_url.endswith('.img') else "initrd.gz"
-            
-            # Load initrd first, then chain to kernel
-            lines.append(f"initrd {entry.initrd_url}")
-            boot_line = f"chain {entry.kernel_url} initrd={initrd_name}"
-            if entry.boot_params:
-                boot_line += f" {entry.boot_params}"
-            boot_line += f" || goto {menu.id}_error"
-            
-            lines.append(boot_line)
-            lines.append("")
-        
-        # Add error handler with pause
-        lines.append(f":{menu.id}_error")
-        lines.append("echo")
-        lines.append("echo Boot failed! Press any key to return to menu...")
-        lines.append("prompt --timeout 30000")
-        lines.append(f"goto {menu.id}")
-        lines.append("")
-        
-        # Add back option
-        lines.append(f":back_{menu.id}")
-        lines.append("goto start")
-        lines.append("")
-        
-        return "\n".join(lines)
-    
-    def generate_additional_items(self) -> str:
-        """Generate iPXE code for additional menu items."""
-        lines = []
-        
-        for item in self.config.get('additional_items', []):
-            item_id = item['id']
-            item_type = item['type']
-            
-            lines.append(f":{item_id}")
-            
-            if item_type == 'chain':
-                lines.append(f"chain --autofree {item['url']} || goto chain_error")
-            elif item_type == 'shell':
-                lines.append("shell")
-            elif item_type == 'exit':
-                lines.append("exit")
-            
-            lines.append("")
-        
-        # Add error handler for chain failures
-        if any(item['type'] == 'chain' for item in self.config.get('additional_items', [])):
-            lines.append(":chain_error")
-            lines.append("echo")
-            lines.append("echo Chain load failed! Press any key to return to menu...")
-            lines.append("prompt --timeout 30000")
-            lines.append("goto start")
-            lines.append("")
-        
-        return "\n".join(lines)
-    
-    def generate_main_menu(self, menus: List[DistributionMenu]) -> str:
-        """Generate the main menu."""
-        menu_config = self.config.get('menu', {})
-        title = menu_config.get('title', 'Network Boot Menu')
-        default = menu_config.get('default_item', 'shell')
-        timeout = menu_config.get('timeout', 30000)
-        
-        lines = ["#!ipxe", "dhcp", "", ":start"]
-        lines.append(f"menu {title}")
-        
-        # Distribution section
-        if menus:
-            lines.append("item --gap -- Operating Systems:")
-            for menu in menus:
-                lines.append(f"item {menu.id} {menu.label}")
-        
-        # Additional items section
-        additional_items = self.config.get('additional_items', [])
-        if additional_items:
-            lines.append("item --gap -- Other Options:")
-            for item in additional_items:
-                if item['type'] not in ['shell', 'exit']:
-                    lines.append(f"item {item['id']} {item['label']}")
-        
-        # Advanced section
-        advanced_items = [item for item in additional_items if item['type'] in ['shell', 'exit']]
-        if advanced_items:
-            lines.append("item --gap -- Advanced:")
-            for item in advanced_items:
-                lines.append(f"item {item['id']} {item['label']}")
-        
-        lines.append(f"choose --default {default} --timeout {timeout} target && goto ${{target}}")
-        lines.append("")
-        
-        return "\n".join(lines)
+        self.env = Environment(
+            loader=FileSystemLoader(template_dir),
+            autoescape=select_autoescape(['html', 'xml']),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
     
     def generate(self, menus: List[DistributionMenu]) -> str:
-        """Generate complete iPXE menu."""
-        parts = []
+        """Generate complete iPXE menu using templates."""
+        # Prepare menu configuration
+        menu_config = self.config.get('menu', {})
+        menu_data = {
+            'title': menu_config.get('title', 'Network Boot Menu'),
+            'default_item': menu_config.get('default_item', 'shell'),
+            'timeout': menu_config.get('timeout', 30000)
+        }
         
-        # Main menu
-        parts.append(self.generate_main_menu(menus))
+        # Get error timeout (defaults to main timeout if not set)
+        error_timeout = menu_config.get('error_timeout', menu_config.get('timeout', 30000))
         
-        # Distribution submenus
+        # Convert distribution menus to dicts for template
+        distributions_data = []
         for menu in menus:
-            parts.append(self.generate_submenu(menu))
+            dist_dict = {
+                'id': menu.id,
+                'label': menu.label,
+                'entries': [
+                    {
+                        'id': entry.id,
+                        'label': entry.label,
+                        'kernel_url': entry.kernel_url,
+                        'initrd_url': entry.initrd_url,
+                        'boot_params': entry.boot_params
+                    }
+                    for entry in menu.entries
+                ]
+            }
+            distributions_data.append(dist_dict)
         
-        # Additional items
-        parts.append(self.generate_additional_items())
+        # Get additional items
+        additional_items = self.config.get('additional_items', [])
         
-        return "\n".join(parts)
+        # Render main template
+        template = self.env.get_template('main_menu.ipxe.j2')
+        output = template.render(
+            menu=menu_data,
+            distributions=distributions_data,
+            additional_items=additional_items,
+            error_timeout=error_timeout
+        )
+        
+        return output
 
 
 def load_config(config_path: Path) -> Dict[str, Any]:

@@ -5,6 +5,7 @@ menu:
   title: "Network Boot Menu"
   default_item: "fedora_menu"
   timeout: 30000  # milliseconds
+  error_timeout: 30000  # milliseconds - how long to show errors before returning to menu
 
 # Distribution configurations
 distributions:

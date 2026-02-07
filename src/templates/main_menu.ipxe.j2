@@ -1,0 +1,39 @@
+{# iPXE Main Menu Template #}
+#!ipxe
+dhcp
+
+:start
+menu {{ menu.title }}
+{%- if distributions %}
+
+item --gap -- Operating Systems:
+{%- for dist in distributions %}
+
+item {{ dist.id }} {{ dist.label }}
+{%- endfor %}
+{%- endif %}
+{%- if additional_items %}
+
+item --gap -- Other Options:
+{%- for item in additional_items %}
+{%- if item.type not in ['shell', 'exit'] %}
+
+item {{ item.id }} {{ item.label }}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- set advanced_items = additional_items | selectattr('type', 'in', ['shell', 'exit']) | list %}
+{%- if advanced_items %}
+
+item --gap -- Advanced:
+{%- for item in advanced_items %}
+
+item {{ item.id }} {{ item.label }}
+{%- endfor %}
+{%- endif %}
+
+choose --default {{ menu.default_item }} --timeout {{ menu.timeout }} target && goto ${target}
+
+{% include 'distribution_submenus.ipxe.j2' %}
+
+{% include 'additional_items.ipxe.j2' %}
