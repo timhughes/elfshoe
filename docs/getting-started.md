@@ -1,13 +1,13 @@
-# Getting Started
+# elfshoe - Getting Started
 
-## What is iPXE Menu Generator?
+## What is elfshoe?
 
-iPXE Menu Generator creates bootable network menus for iPXE. Point users to operating system installers (Fedora, CentOS, Debian) or tools (netboot.xyz) via PXE network boot.
+elfshoe creates bootable network menus for iPXE. Point users to operating system installers (Fedora, CentOS, Debian) or tools (netboot.xyz) via PXE network boot.
 
 ## How It Works
 
 1. **Configure** - Define OS distributions in `config.yaml`
-2. **Generate** - Run `ipxe-menu-gen` to create `menu.ipxe`
+2. **Generate** - Run `elfshoe` to create `menu.ipxe`
 3. **Deploy** - Serve `menu.ipxe` from your web server
 4. **Boot** - Client machines PXE boot and display your menu
 
@@ -36,7 +36,7 @@ distributions:
 ### 2. Generate menu
 
 ```bash
-ipxe-menu-gen
+elfshoe
 ```
 
 ### 3. Result
@@ -87,8 +87,8 @@ distributions:
 
 By default, the generator checks that kernel/initrd files exist before adding them to the menu:
 
-- **Fast mode** (`ipxe-menu-gen --skip-validation`): Skip validation (~1 second)
-- **Validated mode** (`ipxe-menu-gen`): Check all URLs (~30-45 seconds)
+- **Fast mode** (`elfshoe --skip-validation`): Skip validation (~1 second)
+- **Validated mode** (`elfshoe`): Check all URLs (~30-45 seconds)
 
 Use fast mode during development, validated mode before deployment.
 
@@ -137,13 +137,13 @@ boot_params: "console=ttyS0,115200 inst.ks=http://server/kickstart.cfg"
 
 ```bash
 # Quick test without validation
-ipxe-menu-gen --skip-validation
+elfshoe --skip-validation
 
 # Check generated menu
 cat menu.ipxe
 
 # Validate all URLs work
-ipxe-menu-gen
+elfshoe
 ```
 
 ## Performance

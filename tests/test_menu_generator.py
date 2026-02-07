@@ -1,6 +1,6 @@
 """Tests for menu generation functionality."""
 
-from ipxe_menu_gen.core import BootEntry, DistributionMenu, MenuGenerator
+from elfshoe.core import BootEntry, DistributionMenu, MenuGenerator
 
 
 class TestMenuGenerator:

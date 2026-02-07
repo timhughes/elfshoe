@@ -1,22 +1,22 @@
-# iPXE Menu Generator - Reference
+# elfshoe - Reference
 
 ## Command Line Usage
 
 ```bash
 # Generate menu with validation (recommended)
-ipxe-menu-gen
+elfshoe
 
 # Fast generation (no validation)
-ipxe-menu-gen --skip-validation
+elfshoe --skip-validation
 
 # Custom config and output files
-ipxe-menu-gen -c custom-config.yaml -o custom-menu.ipxe
+elfshoe -c custom-config.yaml -o custom-menu.ipxe
 
 # Quiet mode (no output unless errors)
-ipxe-menu-gen --quiet
+elfshoe --quiet
 
 # Show help
-ipxe-menu-gen --help
+elfshoe --help
 ```
 
 ### Command Options
@@ -30,7 +30,7 @@ ipxe-menu-gen --help
 ## Command Line Options
 
 ```bash
-ipxe-menu-gen [OPTIONS]
+elfshoe [OPTIONS]
 
 Options:
   -c, --config FILE     Configuration file (default: config.yaml)
@@ -128,7 +128,7 @@ Project Root/
 ├── config.yaml              # Main configuration
 ├── config.example.yaml      # Example config
 ├── menu.ipxe                # Generated menu (output)
-├── src/ipxe_menu_gen/       # Package source
+├── src/elfshoe/       # Package source
 │   ├── core/                # Core components
 │   ├── distributions/       # Distribution plugins
 │   └── templates/           # Jinja2 templates
@@ -186,9 +186,9 @@ distributions:
 
 ```bash
 # Skip URL validation for faster generation (development mode)
-ipxe-menu-gen --skip-validation
+elfshoe --skip-validation
 # or
-ipxe-menu-gen --no-validate
+elfshoe --no-validate
 ```
 
 **Tip:** Use validation in production to catch broken URLs, but skip it during development/testing.
@@ -197,7 +197,7 @@ ipxe-menu-gen --no-validate
 
 ```bash
 # Run with validation to see which URLs are failing
-ipxe-menu-gen
+elfshoe
 
 # Test specific URL manually
 curl -I http://your-mirror-url/vmlinuz
@@ -219,7 +219,7 @@ This usually means:
 
 ```bash
 # Regenerate menu with validation to check URLs
-ipxe-menu-gen
+elfshoe
 
 # Verify your web server can serve the files
 curl http://your-server/path/to/vmlinuz

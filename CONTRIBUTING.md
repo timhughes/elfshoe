@@ -1,12 +1,12 @@
-# Contributing to iPXE Menu Generator
+# Contributing to elfshoe
 
-Thank you for your interest in contributing to iPXE Menu Generator! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to elfshoe! This document provides guidelines and instructions for contributing.
 
 ## 🎯 How to Contribute
 
 ### Reporting Bugs
 
-1. Check if the bug has already been reported in [Issues](https://github.com/timhughes/ipxe-menu-gen/issues)
+1. Check if the bug has already been reported in [Issues](https://github.com/timhughes/elfshoe/issues)
 2. If not, create a new issue with:
    - Clear, descriptive title
    - Detailed description of the problem
@@ -17,7 +17,7 @@ Thank you for your interest in contributing to iPXE Menu Generator! This documen
 
 ### Suggesting Enhancements
 
-1. Check existing [Issues](https://github.com/timhughes/ipxe-menu-gen/issues) and [Pull Requests](https://github.com/timhughes/ipxe-menu-gen/pulls)
+1. Check existing [Issues](https://github.com/timhughes/elfshoe/issues) and [Pull Requests](https://github.com/timhughes/elfshoe/pulls)
 2. Create a new issue describing:
    - The enhancement you'd like to see
    - Why it would be useful
@@ -49,8 +49,8 @@ Thank you for your interest in contributing to iPXE Menu Generator! This documen
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/ipxe-menu-gen.git
-cd ipxe-menu-gen
+git clone https://github.com/YOUR_USERNAME/elfshoe.git
+cd elfshoe
 
 # Install Hatch
 pip install hatch
@@ -72,7 +72,7 @@ make test
 make test-coverage
 
 # Run specific test file
-pytest tests/test_ipxe_menu_gen.py
+pytest tests/test_elfshoe.py
 
 # Using hatch
 hatch run test
@@ -132,10 +132,10 @@ See [adding_distributions.md](adding_distributions.md) for detailed instructions
 
 ### Quick Checklist
 
-1. Create a metadata fetcher class in `src/ipxe_menu_gen/distributions/`
+1. Create a metadata fetcher class in `src/elfshoe/distributions/`
 2. Inherit from `AbstractMetadataFetcher`
 3. Implement `fetch_versions()` method
-4. Register in `src/ipxe_menu_gen/distributions/__init__.py`
+4. Register in `src/elfshoe/distributions/__init__.py`
 5. Add tests in `tests/`
 6. Update documentation
 7. Add example configuration to README
@@ -197,7 +197,7 @@ Releases are handled by maintainers:
 
 ## 💡 Need Help?
 
-- Check the [documentation](https://timhughes.github.io/ipxe-menu-gen/)
+- Check the [documentation](https://timhughes.github.io/elfshoe/)
 - Look at existing code for examples
 - Review closed pull requests for similar changes
 - Open an issue for questions
@@ -217,4 +217,4 @@ Contributors are recognized in:
 - GitHub contributors list
 - Project README (for major features)
 
-Thank you for contributing to iPXE Menu Generator! 🙏
+Thank you for contributing to elfshoe! 🙏

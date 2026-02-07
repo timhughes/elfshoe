@@ -1,8 +1,8 @@
-# iPXE Network Boot Menu Generator
+# elfshoe
 
-A flexible, configuration-driven iPXE boot menu generator with automatic version detection, URL validation, and a modular plugin architecture.
+**Automated iPXE boot menu generation - where elves craft your network boot menus.**
 
-[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://timhughes.github.io/ipxe-menu-gen/)
+[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://timhughes.github.io/elfshoe/)
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -28,7 +28,7 @@ make fast
 Or directly:
 
 ```bash
-python3 -m ipxe_menu_gen
+python3 -m elfshoe
 ```
 
 ## 📦 Installation
@@ -43,8 +43,8 @@ hatch env create
 **Production:**
 
 ```bash
-pip install ipxe-menu-generator
-ipxe-menu-gen --help
+pip install elfshoeerator
+elfshoe --help
 ```
 
 ## 🎯 Configuration Example
@@ -68,12 +68,12 @@ distributions:
 
 ## 📖 Documentation
 
-Full documentation: **https://timhughes.github.io/ipxe-menu-gen/**
+Full documentation: **https://timhughes.github.io/elfshoe/**
 
-- **[Quick Reference](https://timhughes.github.io/ipxe-menu-gen/quickref/)** - Commands and configuration
-- **[Getting Started](https://timhughes.github.io/ipxe-menu-gen/overview/)** - Concepts and overview
-- **[Adding Distributions](https://timhughes.github.io/ipxe-menu-gen/developer/adding_distributions/)** - Extend with new OSes
-- **[Changelog](https://timhughes.github.io/ipxe-menu-gen/changelog/)** - Version history
+- **[Quick Reference](https://timhughes.github.io/elfshoe/quickref/)** - Commands and configuration
+- **[Getting Started](https://timhughes.github.io/elfshoe/overview/)** - Concepts and overview
+- **[Adding Distributions](https://timhughes.github.io/elfshoe/developer/adding_distributions/)** - Extend with new OSes
+- **[Changelog](https://timhughes.github.io/elfshoe/changelog/)** - Version history
 
 ## 🤝 Contributing
 

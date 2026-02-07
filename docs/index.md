@@ -1,12 +1,12 @@
-# iPXE Network Boot Menu Generator
+# elfshoe
 
-**Automated, validated, version-aware iPXE menu generation from simple YAML configuration.**
+**Automated, validated, version-aware iPXE boot menu generation - where elves craft your network boot menus.**
 
 ---
 
 ## What is this?
 
-iPXE Menu Generator transforms a simple YAML configuration file into production-ready iPXE boot menus. It automatically fetches the latest distribution versions, validates that boot files exist, and generates menus that just work.
+elfshoe transforms a simple YAML configuration file into production-ready iPXE boot menus. It automatically fetches the latest distribution versions, validates that boot files exist, and generates menus that just work.
 
 ## Why does this exist?
 
@@ -17,7 +17,7 @@ Managing iPXE menus manually is painful:
 - **Copy-paste errors**: Adding a new distro means copying 20 lines and hoping you changed all the right fields
 - **Testing overhead**: Manually checking each URL takes forever, so you skip it
 
-iPXE Menu Generator solves this by making menu generation:
+elfshoe solves this by making menu generation:
 - **Automatic** - Fetches latest versions from official metadata
 - **Validated** - Verifies every URL before adding to menu
 - **Repeatable** - Same config always produces working menus
@@ -50,7 +50,7 @@ boot
 - No validation (URL might be broken)
 - No reusability (copy-paste for each distro)
 
-### With iPXE Menu Generator
+### With elfshoe
 ```yaml
 distributions:
   fedora:

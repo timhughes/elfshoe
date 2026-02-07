@@ -27,7 +27,7 @@ pytest -v
 pytest --cov=src --cov-report=term-missing
 
 # Run specific test file
-pytest tests/test_ipxe_menu_gen.py -v
+pytest tests/test_elfshoe.py -v
 
 # Run specific test class
 pytest tests/test_menu_generator.py::TestMenuGenerator -v
@@ -54,7 +54,7 @@ make lint
 ```
 tests/
 ├── conftest.py                 # Shared fixtures and configuration
-├── test_ipxe_menu_gen.py      # Core dataclass tests
+├── test_elfshoe.py      # Core dataclass tests
 ├── test_url_validator.py      # URL validation tests
 └── test_menu_generator.py     # Menu generation tests
 ```
@@ -65,7 +65,7 @@ tests/
 
 ```python
 import pytest
-from ipxe_menu_gen import BootEntry
+from elfshoe import BootEntry
 
 def test_boot_entry_creation():
     """Test creating a boot entry."""
@@ -212,7 +212,7 @@ Ensure you're patching the correct import path:
 
 ```python
 # Patch where it's used, not where it's defined
-@patch('ipxe_menu_gen.urllib.request.urlopen')  # ✓ Correct
+@patch('elfshoe.urllib.request.urlopen')  # ✓ Correct
 @patch('urllib.request.urlopen')                # ✗ May not work
 ```
 
@@ -343,7 +343,7 @@ hatch run lint:format
 ```
 tests/
 ├── conftest.py               # Shared fixtures
-├── test_ipxe_menu_gen.py    # Data model tests
+├── test_elfshoe.py    # Data model tests
 ├── test_url_validator.py     # Validation tests
 └── test_menu_generator.py    # Generation tests
 ```
