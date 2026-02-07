@@ -1,0 +1,54 @@
+# Example Custom iPXE Menu Configuration
+# This is an example showing how to create a custom configuration
+
+menu:
+  title: "My Custom Boot Menu"
+  default_item: "ubuntu_menu"
+  timeout: 60000
+
+distributions:
+  # Example: Ubuntu with static versions
+  ubuntu:
+    enabled: true
+    label: "Boot Ubuntu"
+    type: "static"
+    versions:
+      - version: "24.04"
+        label: "Ubuntu 24.04 LTS (Noble Numbat)"
+      - version: "22.04"
+        label: "Ubuntu 22.04 LTS (Jammy Jellyfish)"
+    url_template: "http://archive.ubuntu.com/ubuntu/dists/{version}/main/installer-amd64/current/legacy-images/netboot/ubuntu-installer/amd64"
+    boot_files:
+      kernel: "linux"
+      initrd: "initrd.gz"
+    boot_params: ""
+  
+  # Example: Custom internal mirror
+  rocky:
+    enabled: true
+    label: "Boot Rocky Linux"
+    type: "static"
+    versions:
+      - version: "9"
+        label: "Rocky Linux 9"
+      - version: "8"
+        label: "Rocky Linux 8"
+    url_template: "http://download.rockylinux.org/pub/rocky/{version}/BaseOS/x86_64/os"
+    boot_files:
+      kernel: "images/pxeboot/vmlinuz"
+      initrd: "images/pxeboot/initrd.img"
+    boot_params: "inst.repo={base_url}/"
+
+additional_items:
+  - id: "rescue"
+    label: "System Rescue"
+    type: "chain"
+    url: "http://boot.netboot.xyz"
+    
+  - id: "shell"
+    label: "iPXE Shell"
+    type: "shell"
+    
+  - id: "reboot"
+    label: "Reboot"
+    type: "exit"
