@@ -1,38 +1,38 @@
-.PHONY: all clean validate fast help
+.DEFAULT_GOAL := help
 
-# Default target
+# Color definitions for help output
+_GREEN := $(shell tput setaf 2)
+_RESET := $(shell tput sgr0)
+
+help:
+	@grep -E '^[a-zA-Z_-]+:.*## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*## "}; {printf "$(_GREEN)make %-20s$(_RESET) %s\n", $$1, $$2}'
+
 all: validate
 
-# Generate menu with full validation
-validate:
-	@echo "Generating iPXE menu with URL validation..."
+validate: ## Generate menu with URL validation
 	python3 src/ipxe_menu_gen.py
 
-# Generate menu without validation (fast)
-fast:
-	@echo "Generating iPXE menu (fast mode, no validation)..."
+fast: ## Generate menu without validation
 	python3 src/ipxe_menu_gen.py --no-validate --quiet
 
-# Generate with custom config
-custom:
-	@echo "Generating iPXE menu from custom config..."
-	python3 src/ipxe_menu_gen.py -c config.example.yaml -o menu-custom.ipxe
+test: ## Run all tests
+	python3 -m pytest tests/ -v
 
-# Clean generated files
-clean:
-	@echo "Removing generated files..."
+test-coverage: ## Run tests with coverage
+	python3 -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-report=html
+
+test-quick: ## Run tests (minimal output)
+	python3 -m pytest tests/ -q
+
+install: ## Install in development mode
+	pip install -e .
+
+install-dev: ## Install with dev dependencies
+	pip install -e ".[dev]"
+
+clean: ## Remove generated files
 	rm -f menu.ipxe menu-custom.ipxe
+	rm -rf htmlcov/ .coverage .pytest_cache
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-# Show help
-help:
-	@echo "iPXE Menu Generator - Makefile targets:"
-	@echo ""
-	@echo "  make            - Generate menu with validation (default)"
-	@echo "  make validate   - Generate menu with URL validation"
-	@echo "  make fast       - Generate menu without validation (faster)"
-	@echo "  make custom     - Generate menu from example config"
-	@echo "  make clean      - Remove generated menu files"
-	@echo "  make help       - Show this help message"
-	@echo ""
-	@echo "Advanced usage:"
-	@echo "  python3 src/ipxe_menu_gen.py --help"
+.PHONY: help all validate fast test test-coverage test-quick clean install install-dev

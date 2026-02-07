@@ -1,0 +1,29 @@
+{# Distribution Submenus Template #}
+{%- for menu in distributions %}
+
+:{{ menu.id }}
+menu {{ menu.label.split('(')[0].strip() }} - Select Version
+{%- for entry in menu.entries %}
+item {{ entry.id }} {{ entry.label }}
+{%- endfor %}
+item --gap --
+item back_{{ menu.id }} Back to main menu
+choose --default {{ menu.entries[0].id }} target && goto ${target}
+
+{%- for entry in menu.entries %}
+
+:{{ entry.id }}
+initrd {{ entry.initrd_url }}
+chain {{ entry.kernel_url }} initrd={{ 'initrd.img' if entry.initrd_url.endswith('.img') else 'initrd.gz' }}{% if entry.boot_params %} {{ entry.boot_params }}{% endif %} || goto {{ menu.id }}_error
+{%- endfor %}
+
+:{{ menu.id }}_error
+echo
+echo Boot failed! Press any key to return to menu...
+prompt --timeout {{ error_timeout }}
+goto {{ menu.id }}
+
+:back_{{ menu.id }}
+goto start
+
+{% endfor %}

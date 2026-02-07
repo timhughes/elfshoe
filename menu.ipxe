@@ -14,27 +14,20 @@ item shell iPXE Shell
 item exit Exit to BIOS
 choose --default fedora_menu --timeout 30000 target && goto ${target}
 
+
 :fedora_menu
-menu Boot Fedora - Select Version
-item fedora_43 Fedora 43 Server
-item fedora_42 Fedora 42 Server
-item fedora_41 Fedora 41 Server
-item --gap --
+menu Boot Fedora - Select Versionitem fedora_43 Fedora 43 Serveritem fedora_42 Fedora 42 Serveritem fedora_41 Fedora 41 Serveritem --gap --
 item back_fedora_menu Back to main menu
 choose --default fedora_43 target && goto ${target}
-
 :fedora_43
 initrd http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/os/images/pxeboot/initrd.img
 chain http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/os/images/pxeboot/vmlinuz initrd=initrd.img inst.repo=http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/os/ || goto fedora_menu_error
-
 :fedora_42
 initrd http://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/os/images/pxeboot/initrd.img
 chain http://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/os/images/pxeboot/vmlinuz initrd=initrd.img inst.repo=http://download.fedoraproject.org/pub/fedora/linux/releases/42/Server/x86_64/os/ || goto fedora_menu_error
-
 :fedora_41
 initrd http://download.fedoraproject.org/pub/fedora/linux/releases/41/Server/x86_64/os/images/pxeboot/initrd.img
 chain http://download.fedoraproject.org/pub/fedora/linux/releases/41/Server/x86_64/os/images/pxeboot/vmlinuz initrd=initrd.img inst.repo=http://download.fedoraproject.org/pub/fedora/linux/releases/41/Server/x86_64/os/ || goto fedora_menu_error
-
 :fedora_menu_error
 echo
 echo Boot failed! Press any key to return to menu...
@@ -44,22 +37,17 @@ goto fedora_menu
 :back_fedora_menu
 goto start
 
+
 :centos_menu
-menu Boot CentOS Stream - Select Version
-item centos_10 CentOS Stream 10
-item centos_9 CentOS Stream 9
-item --gap --
+menu Boot CentOS Stream - Select Versionitem centos_10 CentOS Stream 10item centos_9 CentOS Stream 9item --gap --
 item back_centos_menu Back to main menu
 choose --default centos_10 target && goto ${target}
-
 :centos_10
 initrd http://mirror.stream.centos.org/10-stream/BaseOS/x86_64/os/images/pxeboot/initrd.img
 chain http://mirror.stream.centos.org/10-stream/BaseOS/x86_64/os/images/pxeboot/vmlinuz initrd=initrd.img inst.repo=http://mirror.stream.centos.org/10-stream/BaseOS/x86_64/os/ || goto centos_menu_error
-
 :centos_9
 initrd http://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os/images/pxeboot/initrd.img
 chain http://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os/images/pxeboot/vmlinuz initrd=initrd.img inst.repo=http://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os/ || goto centos_menu_error
-
 :centos_menu_error
 echo
 echo Boot failed! Press any key to return to menu...
@@ -69,22 +57,17 @@ goto centos_menu
 :back_centos_menu
 goto start
 
+
 :debian_menu
-menu Boot Debian - Select Version
-item debian_bookworm Debian 12 Bookworm (Stable)
-item debian_trixie Debian 13 Trixie (Testing)
-item --gap --
+menu Boot Debian - Select Versionitem debian_bookworm Debian 12 Bookworm (Stable)item debian_trixie Debian 13 Trixie (Testing)item --gap --
 item back_debian_menu Back to main menu
 choose --default debian_bookworm target && goto ${target}
-
 :debian_bookworm
 initrd http://deb.debian.org/debian/dists/bookworm/main/installer-amd64/current/images/netboot/debian-installer/amd64/initrd.gz
 chain http://deb.debian.org/debian/dists/bookworm/main/installer-amd64/current/images/netboot/debian-installer/amd64/linux initrd=initrd.gz || goto debian_menu_error
-
 :debian_trixie
 initrd http://deb.debian.org/debian/dists/trixie/main/installer-amd64/current/images/netboot/debian-installer/amd64/initrd.gz
 chain http://deb.debian.org/debian/dists/trixie/main/installer-amd64/current/images/netboot/debian-installer/amd64/linux initrd=initrd.gz || goto debian_menu_error
-
 :debian_menu_error
 echo
 echo Boot failed! Press any key to return to menu...
@@ -93,6 +76,8 @@ goto debian_menu
 
 :back_debian_menu
 goto start
+
+
 
 :netboot
 chain --autofree http://boot.netboot.xyz || goto chain_error
