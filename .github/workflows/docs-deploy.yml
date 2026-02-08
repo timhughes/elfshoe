@@ -17,11 +17,8 @@ jobs:
         with:
           python-version: 3.13
 
-      - name: Install docs dependencies
-        run: python -m pip install --upgrade pip
-
-      - name: Install project docs deps
-        run: pip install -e ."[docs]"
+      - name: Install hatch
+        run: python -m pip install --upgrade pip hatch
 
       - name: Build docs (Makefile)
         run: make docs-build
