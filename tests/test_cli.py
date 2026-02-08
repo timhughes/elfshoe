@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import pytest
 import yaml
+
 from elfshoe.cli import main
 
 

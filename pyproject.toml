@@ -133,3 +133,6 @@ target-version = "py37"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["elfshoe"]
