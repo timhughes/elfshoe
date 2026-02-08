@@ -81,11 +81,9 @@ class FedoraMetadataFetcher(AbstractMetadataFetcher):
             else:
                 architectures = sorted(available_archs)
 
-            version_objects.append({
-                "version": version,
-                "variant": variant,
-                "architectures": architectures
-            })
+            version_objects.append(
+                {"version": version, "variant": variant, "architectures": architectures}
+            )
 
         return version_objects
 

@@ -68,7 +68,7 @@ class DistributionBuilder:
             return DEFAULT_ARCH_MAPS[dist_id]
 
         # Default: identity mapping
-        return {ARCH_X86_64: ARCH_X86_64, 'arm64': 'arm64', 'i386': 'i386'}
+        return {ARCH_X86_64: ARCH_X86_64, "arm64": "arm64", "i386": "i386"}
 
     def _build_entry_for_arch(
         self,
@@ -77,7 +77,7 @@ class DistributionBuilder:
         label: str,
         dist_config: Dict[str, Any],
         ipxe_arch: str,
-        arch_map: Dict[str, str]
+        arch_map: Dict[str, str],
     ) -> Optional[BootEntry]:
         """Build a boot entry for a specific architecture.
 
@@ -127,13 +127,13 @@ class DistributionBuilder:
         params = boot_params.format(base_url=base_url) if boot_params else ""
 
         return BootEntry(
-            id=f"{dist_id}_{version}_{ipxe_arch}".replace('-', '_').replace('.', '_'),
+            id=f"{dist_id}_{version}_{ipxe_arch}".replace("-", "_").replace(".", "_"),
             label=label,
             kernel_url=kernel_url,
             initrd_url=initrd_url,
             boot_params=params,
             architecture=ipxe_arch,
-            version=version
+            version=version,
         )
 
     def _format_label(
@@ -143,7 +143,7 @@ class DistributionBuilder:
         ipxe_arch: str,
         arch_map: Dict[str, str],
         variant: Optional[str] = None,
-        name: Optional[str] = None
+        name: Optional[str] = None,
     ) -> str:
         """Format a human-friendly label for a boot entry.
 
@@ -208,11 +208,11 @@ class DistributionBuilder:
 
                 # Generate human-friendly label
                 label = self._format_label(
-                    dist_config['label'].replace('Boot ', '').replace(' (multiple versions)', ''),
+                    dist_config["label"].replace("Boot ", "").replace(" (multiple versions)", ""),
                     version,
                     ipxe_arch,
                     arch_map,
-                    name=name
+                    name=name,
                 )
 
                 # Build boot entry
@@ -238,7 +238,7 @@ class DistributionBuilder:
             id=f"{dist_id}_menu",
             label=dist_config["label"],
             entries=entries,
-            architectures=all_architectures
+            architectures=all_architectures,
         )
 
     def build_dynamic_distribution(
@@ -315,12 +315,7 @@ class DistributionBuilder:
 
                 # Generate human-friendly label
                 label = self._format_label(
-                    dist_config['label'],
-                    version,
-                    ipxe_arch,
-                    arch_map,
-                    variant=variant,
-                    name=name
+                    dist_config["label"], version, ipxe_arch, arch_map, variant=variant, name=name
                 )
 
                 # Build boot entry
@@ -346,7 +341,7 @@ class DistributionBuilder:
             id=f"{dist_id}_menu",
             label=dist_config["label"],
             entries=entries,
-            architectures=all_architectures
+            architectures=all_architectures,
         )
 
     def build_distribution(

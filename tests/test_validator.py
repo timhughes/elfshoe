@@ -12,7 +12,7 @@ def test_valid_script():
     script = """#!ipxe
 echo Hello World
 """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.ipxe', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".ipxe", delete=False) as f:
         f.write(script)
         f.flush()
         is_valid, errors, warnings = validator.validate_file(f.name)
@@ -25,7 +25,7 @@ def test_missing_shebang():
     """Test validation fails without shebang."""
     validator = IPXEValidator()
     script = "echo Hello World"
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.ipxe', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".ipxe", delete=False) as f:
         f.write(script)
         f.flush()
         is_valid, errors, warnings = validator.validate_file(f.name)
@@ -40,7 +40,7 @@ def test_undefined_label():
     script = """#!ipxe
 goto undefined_label
 """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.ipxe', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".ipxe", delete=False) as f:
         f.write(script)
         f.flush()
         is_valid, errors, warnings = validator.validate_file(f.name)
@@ -57,7 +57,7 @@ choose target && goto ${target}
 :option1
 echo Option 1
 """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.ipxe', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".ipxe", delete=False) as f:
         f.write(script)
         f.flush()
         is_valid, errors, warnings = validator.validate_file(f.name)
@@ -73,7 +73,7 @@ def test_menu_imbalance_warning():
 menu My Menu
 item option1 Option 1
 """
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.ipxe', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".ipxe", delete=False) as f:
         f.write(script)
         f.flush()
         is_valid, errors, warnings = validator.validate_file(f.name)

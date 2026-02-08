@@ -92,7 +92,7 @@ class IPXEValidator:
                 if goto_pos == -1:
                     continue
 
-                after_goto = line[goto_pos + 5:].strip()
+                after_goto = line[goto_pos + 5 :].strip()
                 if not after_goto:
                     continue
 
