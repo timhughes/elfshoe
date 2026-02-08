@@ -33,6 +33,7 @@ theme:
     - content.code.annotation
     - content.code.copy
   language: en
+  custom_dir: overrides
 
 plugins:
   - search:
@@ -47,7 +48,11 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - admonition
@@ -63,6 +68,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+  - Server Setup: server-setup.md
   - Reference: reference.md
   - For Contributors:
       - Contributing Guide: developer/contributing.md

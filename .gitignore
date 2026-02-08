@@ -1,49 +1,26 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
+# Build artifacts
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-ENV/
-env/
-.venv
-
-# Testing
-.pytest_cache/
-.coverage
+site/
 htmlcov/
-.tox/
-*.cover
+.coverage
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
 
-# IDEs
+# Generated files
+elfshoe.ipxe
+
+# Local config (use examples from docs/examples/)
+config.yaml
+
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# Project specific
-menu.ipxe
-config.yaml
-site/
-
-# Distribution
-*.whl
+# OS
+.DS_Store
+Thumbs.db
