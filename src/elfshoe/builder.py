@@ -207,7 +207,6 @@ class DistributionBuilder:
 
             # Build entry for each architecture
             for ipxe_arch in version_architectures:
-
                 # Generate human-friendly label
                 label = self._format_label(
                     dist_config["label"].replace("Boot ", "").replace(" (multiple versions)", ""),

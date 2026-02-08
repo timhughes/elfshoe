@@ -74,11 +74,11 @@ fast = "python -m elfshoe --no-validate --quiet"
 
 [tool.hatch.envs.lint]
 detached = true
-dependencies = ["black>=23.0", "ruff>=0.1.0"]
+dependencies = ["ruff>=0.1.0"]
 
 [tool.hatch.envs.lint.scripts]
-check = ["ruff check src tests", "black --check src tests"]
-format = ["black src tests", "ruff check --fix src tests"]
+check = ["ruff check src tests", "ruff format --check src tests"]
+format = ["ruff check --fix src tests", "ruff format src tests"]
 
 [tool.hatch.envs.docs]
 detached = true
@@ -120,11 +120,6 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
-
-# Black configuration
-[tool.black]
-line-length = 100
-target-version = ['py37']
 
 # Ruff configuration
 [tool.ruff]
