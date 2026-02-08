@@ -22,6 +22,15 @@ class URLValidator:
         try:
             req = urllib.request.Request(url, method="HEAD")
             with urllib.request.urlopen(req, timeout=timeout) as response:
+                final_url = response.geturl()
+                if url.startswith("http://") and final_url.startswith("https://"):
+                    if verbose:
+                        print(
+                            f"  ✗ URL {url} redirects to HTTPS ({final_url}). "
+                            "Standard iPXE builds do not support HTTPS!",
+                            file=sys.stderr,
+                        )
+                    return False
                 return response.status == 200
         except Exception as e:
             if verbose:

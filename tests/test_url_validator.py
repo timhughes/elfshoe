@@ -29,6 +29,19 @@ class TestURLValidator:
         assert result is False
 
     @patch("urllib.request.urlopen")
+    def test_check_url_https_redirect(self, mock_urlopen):
+        """Test URL check detects HTTP to HTTPS redirect."""
+        mock_response = MagicMock()
+        mock_response.status = 200
+        mock_response.geturl.return_value = "https://example.com/test"
+        mock_response.__enter__ = Mock(return_value=mock_response)
+        mock_response.__exit__ = Mock(return_value=False)
+        mock_urlopen.return_value = mock_response
+
+        result = URLValidator.check_url("http://example.com/test", verbose=False)
+        assert result is False
+
+    @patch("urllib.request.urlopen")
     def test_verify_boot_files_success(self, mock_urlopen):
         """Test successful boot files verification."""
         mock_response = MagicMock()
