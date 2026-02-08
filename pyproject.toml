@@ -9,9 +9,7 @@ description = "Automated, validated, multi-architecture iPXE boot menu generatio
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
-authors = [
-    {name = "elfshoe Contributors"}
-]
+authors = [{ name = "elfshoe Contributors" }]
 keywords = ["ipxe", "pxe", "boot", "menu", "network-boot", "elfshoe"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -29,19 +27,16 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 
-dependencies = [
-    "pyyaml>=6.0",
-    "jinja2>=3.0",
-]
+dependencies = ["pyyaml>=6.0", "jinja2>=3.0"]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
     "pytest-mock>=3.10",
-    "black>=23.0",
+    "black>=26.1.0",
     "ruff>=0.1.0",
-    "pre-commit>=3.0.0",
+    "pre-commit>=4.5.1",
 ]
 docs = [
     "mkdocs>=1.5.0",
@@ -69,11 +64,7 @@ packages = ["src/elfshoe"]
 
 # Hatch environments
 [tool.hatch.envs.default]
-dependencies = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "pytest-mock>=3.10",
-]
+dependencies = ["pytest>=7.0", "pytest-cov>=4.0", "pytest-mock>=3.10"]
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests/}"
@@ -83,20 +74,11 @@ fast = "python -m elfshoe --no-validate --quiet"
 
 [tool.hatch.envs.lint]
 detached = true
-dependencies = [
-    "black>=23.0",
-    "ruff>=0.1.0",
-]
+dependencies = ["black>=23.0", "ruff>=0.1.0"]
 
 [tool.hatch.envs.lint.scripts]
-check = [
-    "ruff check src tests",
-    "black --check src tests",
-]
-format = [
-    "black src tests",
-    "ruff check --fix src tests",
-]
+check = ["ruff check src tests", "black --check src tests"]
+format = ["black src tests", "ruff check --fix src tests"]
 
 [tool.hatch.envs.docs]
 detached = true
@@ -117,7 +99,7 @@ serve = "mkdocs serve --dev-addr localhost:8000"
 minversion = "7.0"
 addopts = "-ra -q --strict-markers"
 testpaths = ["tests"]
-pythonpath = ["src"]  # Tell pytest where to find the package
+pythonpath = ["src"]                # Tell pytest where to find the package
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
