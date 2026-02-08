@@ -1,5 +1,15 @@
 .DEFAULT_GOAL := help
 
+# Auto-install pre-commit hooks on first run
+_ := $(shell \
+	if command -v pre-commit >/dev/null 2>&1 && [ -d .git ] && [ ! -f .git/hooks/pre-commit ]; then \
+		printf "\n🔧 Installing pre-commit hooks...\n" >&2; \
+		pre-commit install >/dev/null 2>&1 && \
+		pre-commit install --hook-type pre-push >/dev/null 2>&1 && \
+		printf "✓ Pre-commit hooks installed! They will run automatically on commit/push.\n\n" >&2; \
+	fi \
+)
+
 # Color definitions for help output
 _GREEN := $(shell tput setaf 2)
 _RESET := $(shell tput sgr0)
