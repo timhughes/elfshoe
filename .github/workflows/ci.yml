@@ -9,7 +9,7 @@ on:
 jobs:
   test-and-lint:
     runs-on: ubuntu-latest
-      strategy:
+    strategy:
       matrix:
         python-version: [3.11, 3.12, 3.13]
     steps:
