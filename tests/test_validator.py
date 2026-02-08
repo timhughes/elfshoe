@@ -2,6 +2,7 @@
 
 import tempfile
 from pathlib import Path
+
 from elfshoe.validator import IPXEValidator
 
 

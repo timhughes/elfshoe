@@ -66,7 +66,8 @@ class MenuGenerator:
                         "kernel_url": entry.kernel_url,
                         "initrd_url": entry.initrd_url,
                         "boot_params": entry.boot_params,
-                        "arch_urls": entry.arch_urls,  # Include multi-arch URLs
+                        "architecture": entry.architecture,  # Include architecture
+                        "arch_urls": entry.arch_urls,  # Include multi-arch URLs (legacy)
                     }
                     for entry in menu.entries
                 ],

@@ -117,19 +117,27 @@ distributions:
     label: "Display Label"
     type: "static"|"dynamic"
     
+    # Architecture support (optional)
+    arch_map:
+      arm64: aarch64      # Map iPXE arch names to distro arch names
+      x86_64: x86_64
+    
     # For static type:
     versions:
       - version: "X"
-        label: "Full Label"
+        name: "Release Name"  # Optional
+        architectures: [x86_64, arm64]  # Optional: per-version control
     
     # For dynamic type:
     metadata_provider: "provider_name"  # e.g., "fedora"
     metadata_url: "https://..."
     metadata_filter:
-      key: value
+      variant: "Server"
+      architectures: [x86_64, aarch64]  # Filter for specific architectures
+      latest: 3           # Optional: limit to N latest versions
     
     # Common fields:
-    url_template: "http://example.com/{version}/path"
+    url_template: "http://example.com/{version}/{arch}/path"  # Use {arch} placeholder
     boot_files:
       kernel: "path/to/vmlinuz"
       initrd: "path/to/initrd.img"
@@ -144,18 +152,130 @@ additional_items:
 
 ## URL Templates
 
-Use `{version}` placeholder in URL templates:
+Use `{version}` and `{arch}` placeholders in URL templates:
 
 ```yaml
-# Fedora
-url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/x86_64/os"
+# Fedora with architecture support
+url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/{arch}/os"
 
-# CentOS Stream
-url_template: "http://mirror.stream.centos.org/{version}-stream/BaseOS/x86_64/os"
+# CentOS Stream with architecture
+url_template: "http://mirror.stream.centos.org/{version}-stream/BaseOS/{arch}/os"
 
-# Debian
-url_template: "http://deb.debian.org/debian/dists/{version}/main/installer-amd64/current/images/netboot/debian-installer/amd64"
+# Debian with architecture
+url_template: "http://deb.debian.org/debian/dists/{version}/main/installer-{arch}/current/images/netboot/debian-installer/{arch}"
 ```
+
+## Architecture Support
+
+### Overview
+
+elfshoe supports multiple CPU architectures with automatic client filtering:
+
+- **x86_64** - 64-bit x86 (most servers and desktops)
+- **arm64** - 64-bit ARM (Raspberry Pi 4, Apple Silicon, AWS Graviton)
+- **i386** - 32-bit x86 (legacy systems)
+- **arm** - 32-bit ARM (older embedded devices)
+
+### Architecture Name Mapping
+
+Different distributions use different architecture names. Use `arch_map` to translate:
+
+```yaml
+distributions:
+  fedora:
+    arch_map:
+      arm64: aarch64  # iPXE calls it arm64, Fedora calls it aarch64
+      x86_64: x86_64
+  
+  debian:
+    arch_map:
+      x86_64: amd64   # iPXE calls it x86_64, Debian calls it amd64
+      arm64: arm64
+```
+
+**Common mappings:**
+
+| iPXE Name | Fedora/RHEL | Debian/Ubuntu |
+|-----------|-------------|---------------|
+| x86_64    | x86_64      | amd64         |
+| arm64     | aarch64     | arm64         |
+| i386      | i386        | i386          |
+| arm       | armhfp      | armhf         |
+
+### Dynamic Distributions (Metadata-Driven)
+
+For Fedora and other distributions with metadata providers:
+
+```yaml
+fedora:
+  type: dynamic
+  metadata_filter:
+    variant: Server
+    architectures: [x86_64, aarch64]  # ← Filter metadata
+    latest: 3
+  arch_map:
+    arm64: aarch64
+  url_template: "https://.../{version}/Server/{arch}/os"
+```
+
+**Behavior:**
+- Fetches metadata for specified architectures
+- Only includes versions that exist in metadata
+- Validates URLs for each architecture
+- Skips architectures not available in metadata
+
+### Static Distributions (Manual Configuration)
+
+For distributions without metadata providers:
+
+```yaml
+debian:
+  type: static
+  arch_map:
+    x86_64: amd64
+  versions:
+    - version: "bookworm"
+      name: "12 Bookworm"
+      architectures: [x86_64, arm64]  # ← Per-version control
+    - version: "bullseye"
+      name: "11 Bullseye"
+      architectures: [x86_64]  # Only x86_64 for this version
+```
+
+**Behavior:**
+- You specify which architectures each version supports
+- Can vary architectures per version
+- Validates URLs for each specified architecture
+
+### Client-Side Filtering
+
+Generated menus use `iseq ${buildarch}` to filter items:
+
+```ipxe
+menu Fedora - Select Version
+iseq ${buildarch} x86_64 && item fedora_43_x86_64 Fedora 43 Server (x86_64) ||
+iseq ${buildarch} arm64 && item fedora_43_arm64 Fedora 43 Server (aarch64) ||
+```
+
+**Result:**
+- x86_64 clients only see x86_64 menu items
+- ARM64 clients only see ARM64 menu items
+- No manual selection needed
+- No wrong architecture served
+
+### Single Architecture (Default)
+
+If you don't specify architectures, defaults to x86_64 only:
+
+```yaml
+centos:
+  type: static
+  versions:
+    - version: "9"
+  url_template: "http://mirror.centos.org/{version}/BaseOS/x86_64/os"
+```
+
+This is backward compatible with existing configurations.
 
 ## Boot Parameters
 
@@ -187,10 +307,13 @@ boot_params: "inst.text inst.repo={base_url}/"
 
 ```
 Project Root/
-├── config.yaml              # Main configuration
-├── config.example.yaml      # Example config
-├── elfshoe.ipxe                # Generated menu (output)
-├── src/elfshoe/       # Package source
+├── config.yaml              # Main configuration (see docs/examples/config.yaml)
+├── elfshoe.ipxe             # Generated menu (output)
+├── docs/
+│   └── examples/
+│       ├── config.yaml      # Complete example with all features
+│       └── 99-dnsmasq-pxe-ipxe.conf  # dnsmasq config example
+├── src/elfshoe/             # Package source
 │   ├── core/                # Core components
 │   ├── distributions/       # Distribution plugins
 │   └── templates/           # Jinja2 templates
@@ -227,13 +350,16 @@ distributions:
   fedora:
     enabled: true
     type: "dynamic"
-    label: "Boot Fedora"
+    label: "Fedora"
     metadata_provider: "fedora"
     metadata_url: "https://fedoraproject.org/releases.json"
     metadata_filter:
       variant: "Server"
-      arch: "x86_64"
-    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/x86_64/os"
+      architectures: [x86_64, aarch64]
+      latest: 3  # Only show 3 most recent versions
+    arch_map:
+      arm64: aarch64  # Map iPXE arm64 to Fedora aarch64
+    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/{arch}/os"
     boot_files:
       kernel: "images/pxeboot/vmlinuz"
       initrd: "images/pxeboot/initrd.img"

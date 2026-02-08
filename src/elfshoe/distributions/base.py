@@ -12,14 +12,18 @@ class AbstractMetadataFetcher(ABC):
     """
 
     @abstractmethod
-    def fetch_versions(self, metadata_url: str, **filters) -> List[str]:
+    def fetch_versions(self, metadata_url: str, **filters) -> List[dict]:
         """Fetch available versions from metadata source.
 
         Args:
             metadata_url: URL to fetch metadata from
-            **filters: Distribution-specific filters (e.g., variant, arch)
+            **filters: Distribution-specific filters (e.g., variant, architectures)
 
         Returns:
-            List of version strings, sorted appropriately for the distribution
+            List of version objects (dicts with version, variant, name, architectures)
+            Example: [
+                {"version": "43", "variant": "Server", "architectures": ["x86_64", "aarch64"]},
+                {"version": "42", "variant": "Server", "architectures": ["x86_64", "aarch64"]}
+            ]
         """
         pass

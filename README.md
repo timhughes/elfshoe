@@ -7,6 +7,7 @@
 ## Features
 
 - **🔧 Configuration-driven** - Define distributions and boot options in YAML
+- **🏗️ Multi-architecture support** - Automatic x86_64, ARM64, i386, ARM filtering per client
 - **🔄 Dynamic version detection** - Automatically fetch latest versions from metadata
 - **✅ URL validation** - Verify boot files exist before adding to menu
 - **📝 Custom templates** - Jinja2-based templates, easy to customize

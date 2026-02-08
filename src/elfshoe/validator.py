@@ -25,7 +25,9 @@ class IPXEValidator:
         self.errors: List[ValidationError] = []
         self.warnings: List[ValidationError] = []
 
-    def validate_file(self, script_path: Path) -> Tuple[bool, List[ValidationError], List[ValidationError]]:
+    def validate_file(
+        self, script_path: Path
+    ) -> Tuple[bool, List[ValidationError], List[ValidationError]]:
         """Validate an iPXE script file.
 
         Args:
@@ -65,7 +67,8 @@ class IPXEValidator:
             self.warnings.append(
                 ValidationError(
                     0,
-                    f"Unbalanced menus: {menu_count} menu statements, {choose_count} choose statements",
+                    f"Unbalanced menus: {menu_count} menu statements, "
+                    f"{choose_count} choose statements",
                 )
             )
 
@@ -75,7 +78,7 @@ class IPXEValidator:
         labels = set()
         for i, line in enumerate(lines, 1):
             stripped = line.strip()
-            if stripped.startswith(":") and not stripped.startswith("::"): 
+            if stripped.startswith(":") and not stripped.startswith("::"):
                 # Extract label name (everything after :)
                 label = stripped[1:].split()[0] if stripped[1:].split() else ""
                 if label:
@@ -88,18 +91,18 @@ class IPXEValidator:
                 goto_pos = line.find("goto ")
                 if goto_pos == -1:
                     continue
-                    
+
                 after_goto = line[goto_pos + 5:].strip()
                 if not after_goto:
                     continue
-                
+
                 # Get first token (the target)
                 target = after_goto.split()[0] if after_goto.split() else ""
-                
+
                 # Skip variable references: ${var}, $var, or any string containing $
                 if "$" in target or "{" in target:
                     continue
-                
+
                 # Check if label exists
                 if target and target not in labels:
                     self.errors.append(

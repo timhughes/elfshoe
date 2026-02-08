@@ -1,9 +1,9 @@
 """Distribution menu builder."""
 
 import sys
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
 
-from .core import BootEntry, DistributionMenu, URLValidator, DEFAULT_ARCH_MAPS, ARCH_X86_64
+from .core import ARCH_X86_64, DEFAULT_ARCH_MAPS, BootEntry, DistributionMenu, URLValidator
 from .distributions import get_metadata_fetcher
 
 
@@ -24,52 +24,52 @@ class DistributionBuilder:
 
     def _get_architectures(self, dist_id: str, dist_config: Dict[str, Any]) -> List[str]:
         """Get list of supported architectures for a distribution.
-        
+
         Args:
             dist_id: Distribution identifier
             dist_config: Distribution configuration
-            
+
         Returns:
             List of architecture strings (e.g., ['x86_64', 'arm64'])
         """
         # Check if architectures are specified
         architectures = dist_config.get("architectures")
-        
+
         if not architectures:
             # Backward compatibility: default to x86_64 only
             return [ARCH_X86_64]
-        
+
         if isinstance(architectures, list):
             # Simple list: ['x86_64', 'aarch64']
             return architectures
-        
+
         if isinstance(architectures, dict):
             # Per-arch config: {x86_64: {...}, aarch64: {...}}
             return list(architectures.keys())
-        
+
         return [ARCH_X86_64]
-    
+
     def _get_arch_map(self, dist_id: str, dist_config: Dict[str, Any]) -> Dict[str, str]:
         """Get architecture name mapping for a distribution.
-        
+
         Args:
             dist_id: Distribution identifier
             dist_config: Distribution configuration
-            
+
         Returns:
             Dict mapping iPXE arch names to distribution arch names
         """
         # Use custom arch_map if provided
         if "arch_map" in dist_config:
             return dist_config["arch_map"]
-        
+
         # Use default mapping for known distributions
         if dist_id in DEFAULT_ARCH_MAPS:
             return DEFAULT_ARCH_MAPS[dist_id]
-        
+
         # Default: identity mapping
         return {ARCH_X86_64: ARCH_X86_64, 'arm64': 'arm64', 'i386': 'i386'}
-    
+
     def _build_entry_for_arch(
         self,
         dist_id: str,
@@ -80,7 +80,7 @@ class DistributionBuilder:
         arch_map: Dict[str, str]
     ) -> Optional[BootEntry]:
         """Build a boot entry for a specific architecture.
-        
+
         Args:
             dist_id: Distribution identifier
             version: Version string
@@ -88,29 +88,29 @@ class DistributionBuilder:
             dist_config: Distribution configuration
             ipxe_arch: iPXE architecture name (e.g., 'x86_64', 'arm64')
             arch_map: Architecture name mapping
-            
+
         Returns:
             BootEntry or None if validation fails
         """
         # Map iPXE arch to distribution arch
         dist_arch = arch_map.get(ipxe_arch, ipxe_arch)
-        
+
         # Get configuration for this architecture
         arch_config = dist_config
         architectures = dist_config.get("architectures")
-        
+
         if isinstance(architectures, dict) and ipxe_arch in architectures:
             # Per-arch configuration overrides
             arch_config = {**dist_config, **architectures[ipxe_arch]}
-        
+
         url_template = arch_config["url_template"]
         kernel_path = arch_config["boot_files"]["kernel"]
         initrd_path = arch_config["boot_files"]["initrd"]
         boot_params = arch_config.get("boot_params", "")
-        
+
         # Format URL with version and architecture
         base_url = url_template.format(version=version, arch=dist_arch)
-        
+
         # Validate URLs if requested
         if self.validate_urls:
             if not URLValidator.verify_boot_files(
@@ -121,19 +121,56 @@ class DistributionBuilder:
                 return None
             if self.verbose:
                 print(f"    ✓ {ipxe_arch}: verified")
-        
+
         kernel_url = f"{base_url}/{kernel_path}"
         initrd_url = f"{base_url}/{initrd_path}"
         params = boot_params.format(base_url=base_url) if boot_params else ""
-        
+
         return BootEntry(
             id=f"{dist_id}_{version}_{ipxe_arch}".replace('-', '_').replace('.', '_'),
             label=label,
             kernel_url=kernel_url,
             initrd_url=initrd_url,
             boot_params=params,
-            arch=ipxe_arch
+            architecture=ipxe_arch,
+            version=version
         )
+
+    def _format_label(
+        self,
+        dist_label: str,
+        version: str,
+        ipxe_arch: str,
+        arch_map: Dict[str, str],
+        variant: Optional[str] = None,
+        name: Optional[str] = None
+    ) -> str:
+        """Format a human-friendly label for a boot entry.
+
+        Args:
+            dist_label: Distribution label (e.g., "Fedora")
+            version: Version string (e.g., "43")
+            ipxe_arch: iPXE architecture name (e.g., "x86_64", "arm64")
+            arch_map: Architecture name mapping
+            variant: Optional variant name (e.g., "Server")
+            name: Optional release name (e.g., "Bookworm")
+
+        Returns:
+            Formatted label (e.g., "Fedora 43 Server (x86_64)")
+        """
+        # Get the architecture name to display (use distribution name if mapped)
+        display_arch = arch_map.get(ipxe_arch, ipxe_arch)
+
+        parts = [dist_label, version]
+
+        if name:
+            parts.append(name)
+        elif variant:
+            parts.append(variant)
+
+        parts.append(f"({display_arch})")
+
+        return " ".join(parts)
 
     def build_static_distribution(
         self, dist_id: str, dist_config: Dict[str, Any]
@@ -148,69 +185,60 @@ class DistributionBuilder:
             DistributionMenu object, or None if no valid entries
         """
         entries = []
-        
-        # Get supported architectures
-        ipxe_architectures = self._get_architectures(dist_id, dist_config)
+
+        # Get architecture mapping
         arch_map = self._get_arch_map(dist_id, dist_config)
 
         for version_info in dist_config["versions"]:
             version = version_info["version"]
-            label = version_info.get("label", f"{dist_id.title()} {version}")
+            base_label = version_info.get("label", f"{dist_id.title()} {version}")
+            name = version_info.get("name")  # e.g., "Bookworm" for Debian
+
+            # Get architectures for this version
+            version_architectures = version_info.get("architectures")
+            if not version_architectures:
+                # Backward compatibility: use top-level architectures or default to x86_64
+                version_architectures = self._get_architectures(dist_id, dist_config)
 
             if self.verbose:
-                print(f"  Checking {label}...")
+                print(f"  Checking {base_label}...")
 
-            # Build entries for each architecture
-            arch_entries = {}
-            for ipxe_arch in ipxe_architectures:
+            # Build entry for each architecture
+            for ipxe_arch in version_architectures:
+
+                # Generate human-friendly label
+                label = self._format_label(
+                    dist_config['label'].replace('Boot ', '').replace(' (multiple versions)', ''),
+                    version,
+                    ipxe_arch,
+                    arch_map,
+                    name=name
+                )
+
+                # Build boot entry
                 entry = self._build_entry_for_arch(
                     dist_id, version, label, dist_config, ipxe_arch, arch_map
                 )
+
                 if entry:
-                    arch_entries[ipxe_arch] = entry
-
-            if not arch_entries:
-                if self.verbose:
-                    print(f"  ✗ {label} - no valid architectures found, skipping")
-                continue
-
-            # Create multi-arch boot entry
-            # Use first arch as primary for backward compatibility
-            primary_arch = ipxe_architectures[0]
-            primary_entry = arch_entries.get(primary_arch) or list(arch_entries.values())[0]
-            
-            # Build arch_urls mapping for template
-            arch_urls = {}
-            for ipxe_arch, entry in arch_entries.items():
-                arch_urls[ipxe_arch] = {
-                    'kernel': entry.kernel_url,
-                    'initrd': entry.initrd_url,
-                    'boot_params': entry.boot_params
-                }
-            
-            # Create entry with multi-arch support
-            entry = BootEntry(
-                id=f"{dist_id}_{version.replace('-', '_').replace('.', '_')}",
-                label=label,
-                kernel_url=primary_entry.kernel_url,  # Fallback for single-arch
-                initrd_url=primary_entry.initrd_url,
-                boot_params=primary_entry.boot_params,
-                arch_urls=arch_urls if len(arch_urls) > 1 else None
-            )
-            entries.append(entry)
-            
-            if self.verbose:
-                archs_str = ", ".join(arch_entries.keys())
-                print(f"  ✓ {label} ({archs_str})")
+                    entries.append(entry)
+                    if self.verbose:
+                        print(f"    ✓ {label}")
+                else:
+                    if self.verbose:
+                        print(f"    ✗ {label} - boot files not found, skipping")
 
         if not entries:
             return None
+
+        # Collect all architectures used
+        all_architectures = list(set(entry.architecture for entry in entries))
 
         return DistributionMenu(
             id=f"{dist_id}_menu",
             label=dist_config["label"],
             entries=entries,
-            architectures=ipxe_architectures
+            architectures=all_architectures
         )
 
     def build_dynamic_distribution(
@@ -242,7 +270,7 @@ class DistributionBuilder:
             print(f"     Available providers: {providers}", file=sys.stderr)
             return None
 
-        # Fetch versions from metadata
+        # Fetch version objects from metadata
         metadata_url = dist_config["metadata_url"]
         metadata_filter = dist_config.get("metadata_filter", {})
 
@@ -250,97 +278,75 @@ class DistributionBuilder:
             print(f"  Fetching metadata from {metadata_url}...")
 
         fetcher = fetcher_class()
-        versions = fetcher.fetch_versions(metadata_url, **metadata_filter)
+        version_objects = fetcher.fetch_versions(metadata_url, **metadata_filter)
 
-        if not versions:
+        if not version_objects:
             print(f"  ✗ No versions found for {dist_id}", file=sys.stderr)
             return None
 
         if self.verbose:
-            print(f"  Found {len(versions)} versions: {', '.join(map(str, versions))}")
+            version_list = [vo["version"] for vo in version_objects]
+            print(f"  Found {len(version_objects)} versions: {', '.join(version_list)}")
 
-        # Get supported architectures from config
-        ipxe_architectures = self._get_architectures(dist_id, dist_config)
+        # Get architecture mapping
         arch_map = self._get_arch_map(dist_id, dist_config)
-        
-        # For Fedora, check which architectures are actually available in metadata
-        version_architectures = {}
-        if metadata_provider == "fedora" and hasattr(fetcher, 'get_version_architectures'):
-            variant = metadata_filter.get("variant", "Server")
-            version_architectures = fetcher.get_version_architectures(metadata_url, variant)
-            if self.verbose and version_architectures:
-                print(f"  Metadata indicates available architectures per version")
 
-        # Build entries for each version
-        for version in versions:
-            label = f"{dist_config['label']} {version}"
+        # Build entries for each version × architecture combination
+        for version_obj in version_objects:
+            version = version_obj["version"]
+            variant = version_obj.get("variant")
+            name = version_obj.get("name")
+            architectures = version_obj["architectures"]
 
             if self.verbose:
-                print(f"  Checking {label}...")
-            
-            # Filter architectures: only check those available in metadata (if known)
-            architectures_to_check = ipxe_architectures
-            if str(version) in version_architectures:
-                available_in_metadata = version_architectures[str(version)]
-                # Map iPXE arch names to distro arch names and check
-                architectures_to_check = [
-                    ipxe_arch for ipxe_arch in ipxe_architectures
-                    if arch_map.get(ipxe_arch, ipxe_arch) in available_in_metadata
-                ]
-                
-                if self.verbose and len(architectures_to_check) < len(ipxe_architectures):
-                    skipped = set(ipxe_architectures) - set(architectures_to_check)
-                    print(f"    ℹ Skipping {', '.join(skipped)} (not in metadata)")
+                archs_str = ", ".join(architectures)
+                print(f"  Checking {dist_config['label']} {version} ({archs_str})...")
 
-            # Build entries for each architecture
-            arch_entries = {}
-            for ipxe_arch in architectures_to_check:
-                entry = self._build_entry_for_arch(
-                    dist_id, str(version), label, dist_config, ipxe_arch, arch_map
+            # Build entry for each architecture
+            for dist_arch in architectures:
+                # Map distribution arch to iPXE arch (reverse mapping)
+                ipxe_arch = None
+                for ipxe, dist in arch_map.items():
+                    if dist == dist_arch:
+                        ipxe_arch = ipxe
+                        break
+                if not ipxe_arch:
+                    ipxe_arch = dist_arch  # Use as-is if no mapping
+
+                # Generate human-friendly label
+                label = self._format_label(
+                    dist_config['label'],
+                    version,
+                    ipxe_arch,
+                    arch_map,
+                    variant=variant,
+                    name=name
                 )
+
+                # Build boot entry
+                entry = self._build_entry_for_arch(
+                    dist_id, version, label, dist_config, ipxe_arch, arch_map
+                )
+
                 if entry:
-                    arch_entries[ipxe_arch] = entry
-
-            if not arch_entries:
-                if self.verbose:
-                    print(f"  ✗ {label} - no valid architectures found, skipping")
-                continue
-
-            # Create multi-arch boot entry
-            primary_arch = ipxe_architectures[0]
-            primary_entry = arch_entries.get(primary_arch) or list(arch_entries.values())[0]
-            
-            # Build arch_urls mapping
-            arch_urls = {}
-            for ipxe_arch, entry in arch_entries.items():
-                arch_urls[ipxe_arch] = {
-                    'kernel': entry.kernel_url,
-                    'initrd': entry.initrd_url,
-                    'boot_params': entry.boot_params
-                }
-            
-            entry = BootEntry(
-                id=f"{dist_id}_{version}".replace('-', '_').replace('.', '_'),
-                label=label,
-                kernel_url=primary_entry.kernel_url,
-                initrd_url=primary_entry.initrd_url,
-                boot_params=primary_entry.boot_params,
-                arch_urls=arch_urls if len(arch_urls) > 1 else None
-            )
-            entries.append(entry)
-            
-            if self.verbose:
-                archs_str = ", ".join(arch_entries.keys())
-                print(f"  ✓ {label} ({archs_str})")
+                    entries.append(entry)
+                    if self.verbose:
+                        print(f"    ✓ {label}")
+                else:
+                    if self.verbose:
+                        print(f"    ✗ {label} - boot files not found, skipping")
 
         if not entries:
             return None
+
+        # Collect all architectures used
+        all_architectures = list(set(entry.architecture for entry in entries))
 
         return DistributionMenu(
             id=f"{dist_id}_menu",
             label=dist_config["label"],
             entries=entries,
-            architectures=ipxe_architectures
+            architectures=all_architectures
         )
 
     def build_distribution(

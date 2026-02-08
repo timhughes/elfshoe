@@ -49,7 +49,7 @@ elfshoe
 
 ### 3. Result
 
-You get a `elfshoe.ipxe` file (91 lines) that looks like:
+You get a `elfshoe.ipxe` file that looks like:
 
 ```ipxe
 #!ipxe
@@ -58,9 +58,9 @@ dhcp
 :start
 menu Network Boot Menu
 item --gap -- Operating Systems:
-item fedora_menu Boot Fedora (multiple versions)
-item centos_menu Boot CentOS Stream (multiple versions)
-item debian_menu Boot Debian (multiple versions)
+item fedora_menu Fedora
+item centos_menu CentOS Stream
+item debian_menu Debian
 item --gap -- Other Options:
 item netboot netboot.xyz
 item --gap -- Advanced:
@@ -69,70 +69,117 @@ item exit Exit to BIOS
 choose --default fedora_menu --timeout 30000 target && goto ${target}
 
 :fedora_menu
-menu Boot Fedora - Select Version
-item fedora_43 Boot Fedora (multiple versions) 43
-item fedora_42 Boot Fedora (multiple versions) 42
-item fedora_41 Boot Fedora (multiple versions) 41
+# Architecture-aware menu - shows only matching client architecture
+menu Fedora - Select Version
+iseq ${buildarch} x86_64 && item fedora_43_x86_64 Fedora 43 Server (x86_64) ||
+iseq ${buildarch} arm64 && item fedora_43_arm64 Fedora 43 Server (aarch64) ||
+iseq ${buildarch} x86_64 && item fedora_42_x86_64 Fedora 42 Server (x86_64) ||
+iseq ${buildarch} arm64 && item fedora_42_arm64 Fedora 42 Server (aarch64) ||
 item --gap --
 item back_fedora_menu Back to main menu
-choose --default fedora_43 target && goto ${target}
+choose --default fedora_43_x86_64 target && goto ${target}
 
-:fedora_43
-initrd http://download.fedoraproject.org/.../43/.../initrd.img
-chain http://download.fedoraproject.org/.../43/.../vmlinuz \
-  initrd=initrd.img inst.repo=http://... || goto fedora_menu_error
+:fedora_43_x86_64
+initrd http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/os/images/pxeboot/initrd.img
+chain http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/os/images/pxeboot/vmlinuz initrd=initrd.img inst.repo=http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/os/ || goto fedora_menu_error
 
-:fedora_menu_error
-echo
-echo Boot failed! Press any key to return to menu...
-prompt --timeout 30000
-goto fedora_menu
+:fedora_43_arm64
+initrd http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/aarch64/os/images/pxeboot/initrd.img
+chain http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/aarch64/os/images/pxeboot/vmlinuz initrd=initrd.img inst.repo=http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/aarch64/os/ || goto fedora_menu_error
 
-# ... similar sections for CentOS and Debian ...
-
-:netboot
-chain --autofree http://boot.netboot.xyz || goto start
-
-:shell
-shell
-
-:exit
-exit
+# ... similar sections for other versions ...
 ```
 
-The generator creates a hierarchical menu structure with sub-menus for each distribution, error handling, and navigation.
+**Key features:**
+- **Architecture-aware menus** - x86_64 clients only see x86_64 options, ARM64 clients only see ARM64 options
+- **Automatic filtering** - Uses iPXE's `iseq ${buildarch}` to show only compatible entries
+- **Human-friendly labels** - "Fedora 43 Server (x86_64)" clearly shows what you're booting
+- **Error handling** - Built-in navigation and error recovery
 
 ## Key Concepts
 
+### Architecture Support
+
+elfshoe automatically handles multiple CPU architectures (x86_64, ARM64, etc.) with smart client filtering:
+
+**What you configure:**
+```yaml
+distributions:
+  fedora:
+    type: dynamic
+    metadata_filter:
+      variant: Server
+      architectures: [x86_64, aarch64]  # Fetch both architectures
+    arch_map:
+      arm64: aarch64  # Map iPXE's arm64 to Fedora's aarch64
+```
+
+**What clients see:**
+
+*x86_64 client menu:*
+```
+Fedora - Select Version
+  • Fedora 43 Server (x86_64)
+  • Fedora 42 Server (x86_64)
+  • Fedora 41 Server (x86_64)
+```
+
+*ARM64 client menu:*
+```
+Fedora - Select Version
+  • Fedora 43 Server (aarch64)
+  • Fedora 42 Server (aarch64)
+  • Fedora 41 Server (aarch64)
+```
+
+**How it works:**
+- Uses iPXE's `${buildarch}` variable to detect client architecture
+- `iseq ${buildarch} x86_64 && item ...` shows items only to matching clients
+- No wrong architecture served - clients only see what works for them
+
+**Supported architectures:**
+- `x86_64` - 64-bit x86 (most common)
+- `arm64` - 64-bit ARM (Raspberry Pi 4, Apple Silicon, etc.)
+- `i386` - 32-bit x86 (legacy)
+- `arm` - 32-bit ARM (older devices)
+
 ### Static vs Dynamic Distributions
 
-**Static** - You specify versions manually:
+**Static** - You specify versions and architectures manually:
 ```yaml
 distributions:
   debian:
     type: "static"
+    arch_map:
+      x86_64: amd64  # Map iPXE names to Debian names
     versions:
       - version: "bookworm"
-        label: "Debian 12"
+        name: "12 Bookworm"
+        architectures: [x86_64, arm64]
 ```
 
-**Dynamic** - Versions fetched automatically from metadata:
+**Dynamic** - Versions and architectures fetched automatically from metadata:
 ```yaml
 distributions:
   fedora:
     type: "dynamic"
     metadata_provider: "fedora"
     metadata_url: "https://fedoraproject.org/releases.json"
+    metadata_filter:
+      variant: Server
+      architectures: [x86_64, aarch64]
 ```
 
 ### URL Validation
 
 By default, the generator checks that kernel/initrd files exist before adding them to the menu:
 
-- **Fast mode** (`elfshoe --skip-validation`): Skip validation (~1 second)
+- **Fast mode** (`elfshoe --no-validate`): Skip validation (~1 second)
 - **Validated mode** (`elfshoe`): Check all URLs (~30-45 seconds)
 
 Use fast mode during development, validated mode before deployment.
+
+**Note:** With multi-architecture support, each architecture is validated separately, so validation may take longer for distributions with multiple architectures.
 
 ## Architecture Overview
 
@@ -156,10 +203,14 @@ distributions:
   rocky:
     enabled: true
     type: "static"
+    label: "Rocky Linux"
+    arch_map:
+      arm64: aarch64  # Map architecture names if needed
     versions:
       - version: "9"
         label: "Rocky Linux 9"
-    url_template: "http://mirror.example.com/rocky/{version}/os"
+        architectures: [x86_64, arm64]  # Optional: specify per version
+    url_template: "http://mirror.example.com/rocky/{version}/BaseOS/{arch}/os"
     boot_files:
       kernel: "images/pxeboot/vmlinuz"
       initrd: "images/pxeboot/initrd.img"

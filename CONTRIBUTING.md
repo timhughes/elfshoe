@@ -28,9 +28,11 @@ Thank you for your interest in contributing to elfshoe! This document provides g
 1. **Fork** the repository
 2. **Clone** your fork locally
 3. **Create a branch** for your changes:
+
    ```bash
    git checkout -b feature/my-new-feature
    ```
+
 4. **Make your changes** following our guidelines below
 5. **Test your changes** thoroughly
 6. **Commit** with clear, descriptive messages
@@ -175,6 +177,7 @@ feat: Add support for Ubuntu metadata fetcher
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -188,8 +191,9 @@ feat: Add support for Ubuntu metadata fetcher
 Releases are handled by maintainers:
 
 1. Update version in `pyproject.toml`
-3. Create and tag release
-4. Build and publish to PyPI:
+2. Create and tag release
+3. Build and publish to PyPI:
+
    ```bash
    hatch build
    hatch publish
@@ -214,6 +218,7 @@ Releases are handled by maintainers:
 ## 🎉 Recognition
 
 Contributors are recognized in:
+
 - GitHub contributors list
 - Project README (for major features)
 
