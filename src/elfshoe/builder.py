@@ -21,6 +21,7 @@ class DistributionBuilder:
         self.config = config
         self.validate_urls = validate_urls
         self.verbose = verbose
+        self.validation_errors = []
 
     def _get_architectures(self, dist_id: str, dist_config: Dict[str, Any]) -> List[str]:
         """Get list of supported architectures for a distribution.
@@ -113,9 +114,10 @@ class DistributionBuilder:
 
         # Validate URLs if requested
         if self.validate_urls:
-            if not URLValidator.verify_boot_files(
-                base_url, kernel_path, initrd_path, verbose=False
-            ):
+            validation_result = URLValidator.verify_boot_files(
+                base_url, kernel_path, initrd_path, verbose=self.verbose
+            )
+            if not validation_result:
                 if self.verbose:
                     print(f"    ✗ {ipxe_arch}: boot files not found, skipping")
                 return None

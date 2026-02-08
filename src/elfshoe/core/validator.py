@@ -3,9 +3,16 @@
 import sys
 import urllib.request
 
+# ANSI color codes
+RED = "\033[91m"
+YELLOW = "\033[93m"
+RESET = "\033[0m"
+
 
 class URLValidator:
     """Validates that URLs are accessible."""
+
+    https_redirect_detected = False
 
     @staticmethod
     def check_url(url: str, timeout: int = 10, verbose: bool = True) -> bool:
@@ -24,17 +31,18 @@ class URLValidator:
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 final_url = response.geturl()
                 if url.startswith("http://") and final_url.startswith("https://"):
+                    URLValidator.https_redirect_detected = True
                     if verbose:
                         print(
-                            f"  ✗ URL {url} redirects to HTTPS ({final_url}). "
-                            "Standard iPXE builds do not support HTTPS!",
+                            f"{RED}  ✗ CRITICAL: URL {url} redirects to HTTPS ({final_url}).\n"
+                            f"    Standard iPXE builds do NOT support HTTPS!{RESET}",
                             file=sys.stderr,
                         )
                     return False
                 return response.status == 200
         except Exception as e:
             if verbose:
-                print(f"  ✗ Failed to access {url}: {e}", file=sys.stderr)
+                print(f"{YELLOW}  ✗ Failed to access {url}: {e}{RESET}", file=sys.stderr)
             return False
 
     @staticmethod
