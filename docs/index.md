@@ -108,7 +108,7 @@ Built with Hatch for reproducible environments. Full test suite. Markdown-linted
 
 ## Getting Started
 
-Ready to automate your boot menu? 
+Ready to automate your boot menu?
 
 1. **Set up infrastructure** - See the [Server Setup Guide](server-setup.md) to configure DHCP, TFTP, and HTTP servers
 2. **Generate your menu** - Follow the [Getting Started Guide](getting-started.md) for a complete walkthrough

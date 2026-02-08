@@ -115,12 +115,16 @@ Examples:
             print(f"✓ Menu generated successfully: {args.output}")
             print(f"  Total distributions: {len(menus)}")
             print(f"  Total boot entries: {sum(len(m.entries) for m in menus)}")
-        
+
         # Check if HTTPS redirect was detected during validation
         if URLValidator.https_redirect_detected:
-            print("\n\033[91mERROR: HTTPS redirect(s) detected! iPXE cannot boot from these URLs.\033[0m", file=sys.stderr)
+            print(
+                "\n\033[91mERROR: HTTPS redirect(s) detected! "
+                "iPXE cannot boot from these URLs.\033[0m",
+                file=sys.stderr,
+            )
             sys.exit(1)
-            
+
     except Exception as e:
         print(f"Error writing output: {e}", file=sys.stderr)
         sys.exit(1)

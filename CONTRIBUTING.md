@@ -62,7 +62,19 @@ hatch env create
 
 # Or use editable install
 pip install -e ".[dev]"
+
+# Install pre-commit hooks (recommended)
+make pre-commit-install
 ```
+
+### Pre-commit Hooks
+
+This project uses pre-commit hooks to ensure code quality. After installation:
+
+- **On commit**: Automatically formats code, runs linting, checks docs
+- **On push**: Runs full test suite and verifies package builds
+
+See [docs/developer/pre-commit.md](docs/developer/pre-commit.md) for details.
 
 ### Running Tests
 
@@ -146,6 +158,7 @@ See [adding_distributions.md](adding_distributions.md) for detailed instructions
 
 Before submitting a pull request, ensure:
 
+- [ ] Pre-commit hooks are installed (`make pre-commit-install`)
 - [ ] All tests pass (`make test`)
 - [ ] Code is formatted (`make format`)
 - [ ] Linting passes (`make lint`)
@@ -153,6 +166,8 @@ Before submitting a pull request, ensure:
 - [ ] Documentation is updated
 - [ ] New features have tests
 - [ ] Examples work as documented
+
+**Note:** Pre-commit hooks will automatically check most of these before commit/push.
 
 ## 📋 Commit Messages
 

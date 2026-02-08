@@ -1,0 +1,60 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+
+repos:
+  # Standard pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: ^mkdocs\.yml$
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: mixed-line-ending
+
+  # Python code formatting with Black
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        args: [--line-length=100]
+        language_version: python3
+
+  # Python linting with Ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.15
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  # Local hooks for project-specific tasks
+  - repo: local
+    hooks:
+      # Lint documentation
+      - id: docs-lint
+        name: Lint documentation
+        entry: bash -c 'hatch run docs:lint'
+        language: system
+        pass_filenames: false
+        files: ^docs/.*\.md$
+
+      # Run tests
+      - id: pytest
+        name: Run tests
+        entry: bash -c 'hatch run test'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
+
+      # Build package
+      - id: build
+        name: Build package
+        entry: bash -c 'hatch build --clean'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

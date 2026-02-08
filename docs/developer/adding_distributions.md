@@ -47,14 +47,14 @@ from .base import AbstractMetadataFetcher
 
 class YourDistroMetadataFetcher(AbstractMetadataFetcher):
     """Fetches version information for Your Distribution."""""
-    
+
     def fetch_versions(self, metadata_url: str, **filters) -> List[str]:
         """Fetch versions from metadata source.
-        
+
         Args:
             metadata_url: URL to fetch metadata from
             **filters: Custom filters (e.g., variant, arch)
-            
+
         Returns:
             List of version strings, sorted appropriately
         """
@@ -64,13 +64,13 @@ class YourDistroMetadataFetcher(AbstractMetadataFetcher):
         except Exception as e:
             print(f"  ✗ Failed to fetch metadata: {e}", file=sys.stderr)
             return []
-        
+
         # Parse your metadata format
         versions = []
         for release in data:
             # Extract version based on your metadata structure
             versions.append(release['version'])
-        
+
         # Sort appropriately for your distribution
         return sorted(versions, reverse=True)
 ```
@@ -144,7 +144,7 @@ from .base import AbstractMetadataFetcher
 
 class FreeBSDMetadataFetcher(AbstractMetadataFetcher):
     """Fetches FreeBSD release information."""
-    
+
     def fetch_versions(self, metadata_url: str, **filters) -> List[str]:
         """Fetch FreeBSD versions from FTP directory listing."""
         try:
@@ -153,14 +153,14 @@ class FreeBSDMetadataFetcher(AbstractMetadataFetcher):
         except Exception as e:
             print(f"  ✗ Failed to fetch FreeBSD metadata: {e}", file=sys.stderr)
             return []
-        
+
         # Parse FTP directory listing for release versions
         versions = []
         for match in re.finditer(r'(\d+\.\d+)-RELEASE', html):
             versions.append(match.group(1))
-        
+
         # Sort by version number, newest first
-        return sorted(set(versions), key=lambda v: tuple(map(int, v.split('.'))), 
+        return sorted(set(versions), key=lambda v: tuple(map(int, v.split('.'))),
                      reverse=True)
 ```
 
@@ -203,7 +203,7 @@ distributions:
 
    ```python
    from elfshoe.distributions import YourDistroMetadataFetcher
-   
+
    def test_fetch_versions():
        fetcher = YourDistroMetadataFetcher()
        versions = fetcher.fetch_versions("http://example.com/metadata.json")

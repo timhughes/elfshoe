@@ -128,10 +128,10 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
     range 192.168.1.100 192.168.1.200;
     option routers 192.168.1.1;
     option domain-name-servers 8.8.8.8, 8.8.4.4;
-    
+
     # TFTP server address
     next-server 192.168.1.10;
-    
+
     # Architecture-specific boot files
     if option architecture-type = 00:00 {
         # BIOS
@@ -236,14 +236,14 @@ sudo dnf install nginx
 server {
     listen 80;
     server_name pxe.example.com;
-    
+
     root /var/www/pxe;
-    
+
     location / {
         autoindex on;
         add_header Cache-Control "no-cache, must-revalidate";
     }
-    
+
     # Serve elfshoe-generated menu
     location /elfshoe.ipxe {
         default_type text/plain;
@@ -265,7 +265,7 @@ sudo systemctl reload nginx
 <VirtualHost *:80>
     ServerName pxe.example.com
     DocumentRoot /var/www/pxe
-    
+
     <Directory /var/www/pxe>
         Options +Indexes
         Require all granted

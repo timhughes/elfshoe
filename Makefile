@@ -35,7 +35,7 @@ clean: ## Remove generated files
 	rm -rf htmlcov/ .coverage .pytest_cache site/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-.PHONY: help all validate fast test test-coverage test-quick lint format build publish clean install install-dev docs-lint docs-serve docs-build docs-deploy version-show version-patch version-minor version-major version-tag
+.PHONY: help all validate fast test test-coverage test-quick lint format build publish clean install install-dev docs-lint docs-serve docs-build docs-deploy version-show version-patch version-minor version-major version-tag pre-commit-install pre-commit-run pre-commit-update
 
 lint: ## Check code style
 	hatch run lint:check
@@ -77,3 +77,13 @@ version-tag: ## Create and push git tag for current version
 	@VERSION=$$(hatch version) && \
 	git tag -a "v$$VERSION" -m "Release v$$VERSION" && \
 	echo "Created tag v$$VERSION. Push with: git push origin v$$VERSION"
+
+pre-commit-install: ## Install pre-commit hooks
+	pre-commit install
+	pre-commit install --hook-type pre-push
+
+pre-commit-run: ## Run pre-commit hooks on all files
+	pre-commit run --all-files
+
+pre-commit-update: ## Update pre-commit hooks to latest versions
+	pre-commit autoupdate

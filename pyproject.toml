@@ -41,6 +41,7 @@ dev = [
     "pytest-mock>=3.10",
     "black>=23.0",
     "ruff>=0.1.0",
+    "pre-commit>=3.0.0",
 ]
 docs = [
     "mkdocs>=1.5.0",
@@ -150,4 +151,3 @@ target-version = "py37"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP"]
-

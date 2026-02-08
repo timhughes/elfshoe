@@ -116,18 +116,18 @@ distributions:
     enabled: true|false
     label: "Display Label"
     type: "static"|"dynamic"
-    
+
     # Architecture support (optional)
     arch_map:
       arm64: aarch64      # Map iPXE arch names to distro arch names
       x86_64: x86_64
-    
+
     # For static type:
     versions:
       - version: "X"
         name: "Release Name"  # Optional
         architectures: [x86_64, arm64]  # Optional: per-version control
-    
+
     # For dynamic type:
     metadata_provider: "provider_name"  # e.g., "fedora"
     metadata_url: "https://..."
@@ -135,7 +135,7 @@ distributions:
       variant: "Server"
       architectures: [x86_64, aarch64]  # Filter for specific architectures
       latest: 3           # Optional: limit to N latest versions
-    
+
     # Common fields:
     url_template: "http://example.com/{version}/{arch}/path"  # Use {arch} placeholder
     boot_files:
@@ -186,7 +186,7 @@ distributions:
     arch_map:
       arm64: aarch64  # iPXE calls it arm64, Fedora calls it aarch64
       x86_64: x86_64
-  
+
   debian:
     arch_map:
       x86_64: amd64   # iPXE calls it x86_64, Debian calls it amd64

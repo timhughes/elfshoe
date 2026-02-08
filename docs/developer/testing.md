@@ -100,7 +100,7 @@ def test_url_check(mock_urlopen):
     mock_response = MagicMock()
     mock_response.status = 200
     mock_urlopen.return_value = mock_response
-    
+
     # Your test code here
 ```
 
@@ -158,11 +158,11 @@ Tests can be run in CI/CD pipelines:
 ```python
 def test_load_config(temp_dir, sample_config):
     import yaml
-    
+
     config_file = temp_dir / 'config.yaml'
     with open(config_file, 'w') as f:
         yaml.dump(sample_config, f)
-    
+
     loaded = load_config(config_file)
     assert loaded == sample_config
 ```
@@ -173,7 +173,7 @@ def test_load_config(temp_dir, sample_config):
 def test_menu_output(sample_config):
     generator = MenuGenerator(sample_config)
     output = generator.generate([])
-    
+
     assert '#!ipxe' in output
     assert 'dhcp' in output
 ```
@@ -186,7 +186,7 @@ def test_url_validation(mock_urlopen):
     mock_response = MagicMock()
     mock_response.status = 200
     mock_urlopen.return_value = mock_response
-    
+
     result = URLValidator.check_url('http://example.com')
     assert result is True
 ```
@@ -358,7 +358,7 @@ def test_url_validation(mock_urlopen):
     mock_response = MagicMock()
     mock_response.status = 200
     mock_urlopen.return_value.__enter__.return_value = mock_response
-    
+
     assert URLValidator.check_url('http://example.com')
 ```
 
