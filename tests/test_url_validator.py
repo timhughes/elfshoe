@@ -13,6 +13,7 @@ class TestURLValidator:
         """Test successful URL check."""
         mock_response = MagicMock()
         mock_response.status = 200
+        mock_response.geturl.return_value = "http://example.com/test"
         mock_response.__enter__ = Mock(return_value=mock_response)
         mock_response.__exit__ = Mock(return_value=False)
         mock_urlopen.return_value = mock_response
@@ -46,6 +47,10 @@ class TestURLValidator:
         """Test successful boot files verification."""
         mock_response = MagicMock()
         mock_response.status = 200
+        mock_response.geturl.side_effect = [
+            "http://example.com/vmlinuz",
+            "http://example.com/initrd.img",
+        ]
         mock_response.__enter__ = Mock(return_value=mock_response)
         mock_response.__exit__ = Mock(return_value=False)
         mock_urlopen.return_value = mock_response
