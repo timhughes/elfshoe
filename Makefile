@@ -35,7 +35,7 @@ clean: ## Remove generated files
 	rm -rf htmlcov/ .coverage .pytest_cache site/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-.PHONY: help all validate fast test test-coverage test-quick lint format build publish clean install install-dev docs-lint docs-serve docs-build docs-deploy
+.PHONY: help all validate fast test test-coverage test-quick lint format build publish clean install install-dev docs-lint docs-serve docs-build docs-deploy version-show version-patch version-minor version-major version-tag
 
 lint: ## Check code style
 	hatch run lint:check
@@ -60,3 +60,20 @@ docs-build: ## Build documentation
 
 docs-deploy: ## Deploy documentation to GitHub Pages
 	mkdocs gh-deploy --force
+
+version-show: ## Show current version
+	hatch version
+
+version-patch: ## Bump patch version (0.1.0 -> 0.1.1)
+	hatch version patch
+
+version-minor: ## Bump minor version (0.1.0 -> 0.2.0)
+	hatch version minor
+
+version-major: ## Bump major version (0.1.0 -> 1.0.0)
+	hatch version major
+
+version-tag: ## Create and push git tag for current version
+	@VERSION=$$(hatch version) && \
+	git tag -a "v$$VERSION" -m "Release v$$VERSION" && \
+	echo "Created tag v$$VERSION. Push with: git push origin v$$VERSION"

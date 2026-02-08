@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "elfshoe"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Automated, validated, multi-architecture iPXE boot menu generation - where elves craft your network boot menus"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -60,6 +60,9 @@ Repository = "https://github.com/timhughes/elfshoe"
 Issues = "https://github.com/timhughes/elfshoe/issues"
 
 # Hatch build configuration
+[tool.hatch.version]
+path = "src/elfshoe/__init__.py"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/elfshoe"]
 
