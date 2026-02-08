@@ -13,6 +13,7 @@ except ImportError:
 
 from .builder import DistributionBuilder
 from .core import MenuGenerator, URLValidator
+from .validator import validate_and_report
 
 
 def load_config(config_path: Path) -> Dict[str, Any]:
@@ -115,6 +116,18 @@ Examples:
             print(f"✓ Menu generated successfully: {args.output}")
             print(f"  Total distributions: {len(menus)}")
             print(f"  Total boot entries: {sum(len(m.entries) for m in menus)}")
+
+        # Validate the generated file
+        if verbose:
+            print("\nValidating generated iPXE script...")
+
+        validation_passed = validate_and_report(args.output, quiet=args.quiet)
+        if not validation_passed:
+            print(
+                "\n\033[91mERROR: Generated iPXE script has validation errors!\033[0m",
+                file=sys.stderr,
+            )
+            sys.exit(1)
 
         # Check if HTTPS redirect was detected during validation
         if URLValidator.https_redirect_detected:

@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .validator import IPXEValidator
+from .validator import validate_multiple_files
 
 
 def main():
@@ -29,46 +29,7 @@ Examples:
 
     args = parser.parse_args()
 
-    validator = IPXEValidator()
-    all_valid = True
-    total_errors = 0
-    total_warnings = 0
-
-    for script_path in args.files:
-        if not script_path.exists():
-            print(f"Error: File not found: {script_path}", file=sys.stderr)
-            all_valid = False
-            continue
-
-        is_valid, errors, warnings = validator.validate_file(script_path)
-
-        # Print results
-        if errors:
-            print(f"\n❌ {script_path}: FAILED")
-            for error in errors:
-                print(f"  {error}")
-            total_errors += len(errors)
-            all_valid = False
-        elif warnings:
-            if not args.quiet:
-                print(f"\n⚠️  {script_path}: WARNINGS")
-                for warning in warnings:
-                    print(f"  {warning}")
-            total_warnings += len(warnings)
-            if args.strict:
-                all_valid = False
-        else:
-            if not args.quiet:
-                print(f"✓ {script_path}: OK")
-
-    # Summary
-    if len(args.files) > 1 and not args.quiet:
-        print("\n" + "=" * 60)
-        print(f"Validated {len(args.files)} file(s)")
-        if total_errors:
-            print(f"  Errors: {total_errors}")
-        if total_warnings:
-            print(f"  Warnings: {total_warnings}")
+    all_valid = validate_multiple_files(args.files, strict=args.strict, quiet=args.quiet)
 
     if not all_valid:
         sys.exit(1)

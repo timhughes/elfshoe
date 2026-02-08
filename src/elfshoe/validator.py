@@ -3,6 +3,7 @@
 Validates generated iPXE scripts for common syntax errors.
 """
 
+import sys
 from pathlib import Path
 from typing import List, Tuple
 
@@ -155,3 +156,98 @@ class IPXEValidator:
                 self.warnings.append(
                     ValidationError(i, f"Unknown or potentially misspelled command: '{first_word}'")
                 )
+
+
+def validate_and_report(script_path: Path, *, strict: bool = False, quiet: bool = False) -> bool:
+    """Validate an iPXE script file and report results to stdout/stderr.
+
+    Args:
+        script_path: Path to iPXE script file to validate
+        strict: Treat warnings as errors
+        quiet: Only show errors
+
+    Returns:
+        True if validation passed (no errors, and no warnings in strict mode)
+    """
+    if not script_path.exists():
+        print(f"Error: File not found: {script_path}", file=sys.stderr)
+        return False
+
+    validator = IPXEValidator()
+    is_valid, errors, warnings = validator.validate_file(script_path)
+
+    # Print results
+    if errors:
+        print(f"\n❌ {script_path}: FAILED")
+        for error in errors:
+            print(f"  {error}")
+        return False
+    elif warnings:
+        if not quiet:
+            print(f"\n⚠️  {script_path}: WARNINGS")
+            for warning in warnings:
+                print(f"  {warning}")
+        if strict:
+            return False
+    else:
+        if not quiet:
+            print(f"✓ {script_path}: OK")
+
+    return True
+
+
+def validate_multiple_files(
+    file_paths: List[Path], *, strict: bool = False, quiet: bool = False
+) -> bool:
+    """Validate multiple iPXE script files and report aggregate results.
+
+    Args:
+        file_paths: List of paths to iPXE script files
+        strict: Treat warnings as errors
+        quiet: Only show errors
+
+    Returns:
+        True if all files passed validation
+    """
+    validator = IPXEValidator()
+    all_valid = True
+    total_errors = 0
+    total_warnings = 0
+
+    for script_path in file_paths:
+        if not script_path.exists():
+            print(f"Error: File not found: {script_path}", file=sys.stderr)
+            all_valid = False
+            continue
+
+        is_valid, errors, warnings = validator.validate_file(script_path)
+
+        # Print results
+        if errors:
+            print(f"\n❌ {script_path}: FAILED")
+            for error in errors:
+                print(f"  {error}")
+            total_errors += len(errors)
+            all_valid = False
+        elif warnings:
+            if not quiet:
+                print(f"\n⚠️  {script_path}: WARNINGS")
+                for warning in warnings:
+                    print(f"  {warning}")
+            total_warnings += len(warnings)
+            if strict:
+                all_valid = False
+        else:
+            if not quiet:
+                print(f"✓ {script_path}: OK")
+
+    # Summary
+    if len(file_paths) > 1 and not quiet:
+        print("\n" + "=" * 60)
+        print(f"Validated {len(file_paths)} file(s)")
+        if total_errors:
+            print(f"  Errors: {total_errors}")
+        if total_warnings:
+            print(f"  Warnings: {total_warnings}")
+
+    return all_valid
