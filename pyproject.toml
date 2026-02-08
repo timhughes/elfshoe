@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "elfshoe"
-version = "2.1.0"
+version = "0.1.0"
 description = "Automated, validated, multi-architecture iPXE boot menu generation - where elves craft your network boot menus"
 readme = "README.md"
 requires-python = ">=3.7"
