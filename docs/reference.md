@@ -219,6 +219,7 @@ fedora:
 ```
 
 **Behavior:**
+
 - Fetches metadata for specified architectures
 - Only includes versions that exist in metadata
 - Validates URLs for each architecture
@@ -243,6 +244,7 @@ debian:
 ```
 
 **Behavior:**
+
 - You specify which architectures each version supports
 - Can vary architectures per version
 - Validates URLs for each specified architecture
@@ -258,6 +260,7 @@ iseq ${buildarch} arm64 && item fedora_43_arm64 Fedora 43 Server (aarch64) ||
 ```
 
 **Result:**
+
 - x86_64 clients only see x86_64 menu items
 - ARM64 clients only see ARM64 menu items
 - No manual selection needed
@@ -305,7 +308,7 @@ boot_params: "inst.text inst.repo={base_url}/"
 
 ## File Locations
 
-```
+```text
 Project Root/
 ├── config.yaml              # Main configuration (see docs/examples/config.yaml)
 ├── elfshoe.ipxe             # Generated menu (output)
@@ -323,6 +326,7 @@ Project Root/
 ## Adding a Distribution
 
 ### Static (Simple)
+
 Add to `config.yaml`:
 
 ```yaml
@@ -392,13 +396,16 @@ curl -I http://your-mirror-url/vmlinuz
 ```
 
 ### Boot Files Not Found (404 errors)
+
 - Check that the `url_template` is correct for your mirror
 - Verify `boot_files` paths match your distribution's file structure
 - Test the full URL: `{url_template}/{kernel_path}`
 - Try a different mirror if the current one is down
 
 ### iPXE Shows "No Such File"
+
 This usually means:
+
 1. The URL in the generated menu is incorrect
 2. The web server hosting the files is not accessible from the client
 3. The file paths in `boot_files` don't match the actual file locations
@@ -425,17 +432,20 @@ cat elfshoe.ipxe | grep -A5 "boot_fedora"
 ## Version Detection
 
 ### Fedora (Dynamic)
+
 - Fetches versions from: `https://fedoraproject.org/releases.json`
 - Filters by: `variant=Server`, `arch=x86_64`
 - Returns: Latest 3-5 supported versions automatically
 
 ### Other Distributions
+
 - CentOS, Debian, Rocky: Use static version lists
 - Custom distributions: Can add dynamic metadata providers (see contributor docs)
 
 ## iPXE Boot Process
 
 ### How It Works
+
 1. Client machine boots via PXE
 2. DHCP server provides iPXE binary location
 3. iPXE loads and fetches `elfshoe.ipxe` from your web server
@@ -469,11 +479,13 @@ goto start
 ### Boot Parameters
 
 Common parameters you can add to `boot_params`:
+
 - **Fedora/RHEL**: `inst.repo={base_url}/ inst.ks=http://server/kickstart.cfg`
 - **Debian/Ubuntu**: `auto=true url=http://server/preseed.cfg`
 - **Generic**: `console=ttyS0,115200` (for serial console)
 
 ### Supported File Types
+
 - **Kernel**: `vmlinuz`, `linux`, `bzImage`
 - **Initrd**: `initrd.img`, `initrd.gz`, `initramfs`
 

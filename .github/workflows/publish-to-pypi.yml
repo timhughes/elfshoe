@@ -8,6 +8,11 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/elfshoe
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,7 +29,4 @@ jobs:
         run: make build
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        uses: pypa/gh-action-pypi-publish@release/v1

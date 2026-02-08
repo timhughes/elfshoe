@@ -31,6 +31,7 @@ Download pre-built iPXE binaries from the official iPXE project:
 - **Direct downloads**: [https://boot.ipxe.org/](https://boot.ipxe.org/)
 
 **Required files:**
+
 ```bash
 # For BIOS/Legacy systems
 wget https://boot.ipxe.org/ipxe.pxe -O /tftpboot/ipxe.pxe
@@ -79,6 +80,7 @@ cp bin-x86_64-efi/ipxe.efi /tftpboot/
 dnsmasq combines DHCP and TFTP in one lightweight daemon.
 
 **Install:**
+
 ```bash
 # Debian/Ubuntu
 sudo apt install dnsmasq
@@ -94,12 +96,14 @@ sudo dnf install dnsmasq
 ```
 
 **Notes:**
+
 - Adjust `tftp-root=/tftpboot` to your TFTP directory
 - `elfshoe.ipxe` must be a file in the TFTP root (DHCP boot filename option only supports TFTP)
 - For HTTP delivery, use Option 2 below (chain loader approach)
 - Supports both BIOS and UEFI clients automatically
 
 **Restart:**
+
 ```bash
 sudo systemctl restart dnsmasq
 sudo systemctl enable dnsmasq
@@ -110,6 +114,7 @@ sudo systemctl enable dnsmasq
 For environments already using ISC DHCP.
 
 **Install:**
+
 ```bash
 # Debian/Ubuntu
 sudo apt install isc-dhcp-server
@@ -150,6 +155,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 ```
 
 **Restart:**
+
 ```bash
 sudo systemctl restart isc-dhcp-server
 sudo systemctl enable isc-dhcp-server
@@ -166,6 +172,7 @@ For Windows Server environments.
    - **Option 67** (Boot File Name): `ipxe.efi` (or `ipxe.pxe` for BIOS)
 
 **For mixed BIOS/UEFI environments**, use DHCP policies:
+
 1. Right-click scope → **Policies** → **New Policy**
 2. Name: "UEFI Clients"
 3. Conditions: Client identifier → Match → `00:07` (UEFI x86_64)
@@ -181,6 +188,7 @@ If using dnsmasq for DHCP, TFTP is already enabled.
 ### Option 2: tftpd-hpa (Standalone TFTP)
 
 **Install:**
+
 ```bash
 # Debian/Ubuntu
 sudo apt install tftpd-hpa
@@ -190,6 +198,7 @@ sudo dnf install tftp-server
 ```
 
 **Configure** (`/etc/default/tftpd-hpa`):
+
 ```bash
 TFTP_USERNAME="tftp"
 TFTP_DIRECTORY="/tftpboot"
@@ -198,6 +207,7 @@ TFTP_OPTIONS="--secure"
 ```
 
 **Setup directory:**
+
 ```bash
 sudo mkdir -p /tftpboot
 sudo chown -R tftp:tftp /tftpboot
@@ -205,6 +215,7 @@ sudo chmod 755 /tftpboot
 ```
 
 **Start:**
+
 ```bash
 sudo systemctl restart tftpd-hpa
 sudo systemctl enable tftpd-hpa
@@ -213,6 +224,7 @@ sudo systemctl enable tftpd-hpa
 ### Option 3: Windows TFTP
 
 Use a third-party TFTP server like:
+
 - **Tftpd64** - [https://pjo2.github.io/tftpd64/](https://pjo2.github.io/tftpd64/)
 - **SolarWinds TFTP Server**
 
@@ -223,6 +235,7 @@ Your elfshoe-generated `elfshoe.ipxe` should be served via HTTP (not TFTP) for b
 ### Option 1: nginx
 
 **Install:**
+
 ```bash
 # Debian/Ubuntu
 sudo apt install nginx
@@ -232,6 +245,7 @@ sudo dnf install nginx
 ```
 
 **Configure** (`/etc/nginx/sites-available/pxe-boot`):
+
 ```nginx
 server {
     listen 80;
@@ -252,6 +266,7 @@ server {
 ```
 
 **Deploy menu:**
+
 ```bash
 sudo mkdir -p /var/www/pxe
 sudo cp elfshoe.ipxe /var/www/pxe/
@@ -261,6 +276,7 @@ sudo systemctl reload nginx
 ### Option 2: Apache
 
 **Configure** (`/etc/apache2/sites-available/pxe-boot.conf`):
+
 ```apache
 <VirtualHost *:80>
     ServerName pxe.example.com
@@ -433,11 +449,13 @@ chain http://192.168.1.10/elfshoe.ipxe
    - Download iPXE boot files
 
 2. **Generate menu with elfshoe:**
+
    ```bash
    elfshoe -c config.yaml -o elfshoe.ipxe
    ```
 
 3. **Deploy menu:**
+
    ```bash
    sudo cp elfshoe.ipxe /var/www/pxe/
    ```

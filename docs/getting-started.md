@@ -91,6 +91,7 @@ chain http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/aarc
 ```
 
 **Key features:**
+
 - **Architecture-aware menus** - x86_64 clients only see x86_64 options, ARM64 clients only see ARM64 options
 - **Automatic filtering** - Uses iPXE's `iseq ${buildarch}` to show only compatible entries
 - **Human-friendly labels** - "Fedora 43 Server (x86_64)" clearly shows what you're booting
@@ -103,6 +104,7 @@ chain http://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/aarc
 elfshoe automatically handles multiple CPU architectures (x86_64, ARM64, etc.) with smart client filtering:
 
 **What you configure:**
+
 ```yaml
 distributions:
   fedora:
@@ -117,6 +119,7 @@ distributions:
 **What clients see:**
 
 *x86_64 client menu:*
+
 ```
 Fedora - Select Version
   • Fedora 43 Server (x86_64)
@@ -125,6 +128,7 @@ Fedora - Select Version
 ```
 
 *ARM64 client menu:*
+
 ```
 Fedora - Select Version
   • Fedora 43 Server (aarch64)
@@ -133,11 +137,13 @@ Fedora - Select Version
 ```
 
 **How it works:**
+
 - Uses iPXE's `${buildarch}` variable to detect client architecture
 - `iseq ${buildarch} x86_64 && item ...` shows items only to matching clients
 - No wrong architecture served - clients only see what works for them
 
 **Supported architectures:**
+
 - `x86_64` - 64-bit x86 (most common)
 - `arm64` - 64-bit ARM (Raspberry Pi 4, Apple Silicon, etc.)
 - `i386` - 32-bit x86 (legacy)
@@ -146,6 +152,7 @@ Fedora - Select Version
 ### Static vs Dynamic Distributions
 
 **Static** - You specify versions and architectures manually:
+
 ```yaml
 distributions:
   debian:
@@ -159,6 +166,7 @@ distributions:
 ```
 
 **Dynamic** - Versions and architectures fetched automatically from metadata:
+
 ```yaml
 distributions:
   fedora:
@@ -198,6 +206,7 @@ For detailed architecture, see [Architecture Documentation](developer/architectu
 ### Adding a New Distribution
 
 **Option 1: Static** (simple)
+
 ```yaml
 distributions:
   rocky:
@@ -267,6 +276,7 @@ sudo cp elfshoe.ipxe /var/www/html/pxe/
 ```
 
 **Don't have a server set up yet?** See the [Server Setup Guide](server-setup.md) for:
+
 - Installing and configuring DHCP/TFTP servers (dnsmasq, ISC DHCP, Windows)
 - Setting up HTTP servers (nginx, Apache)
 - Getting iPXE boot files
@@ -284,11 +294,13 @@ sudo cp elfshoe.ipxe /var/www/html/pxe/
 ### Troubleshooting
 
 **Menu doesn't appear:**
+
 - Verify HTTP server is accessible: `curl http://your-server/elfshoe.ipxe`
 - Check client can reach server (ping, firewall rules)
 - Review DHCP/TFTP logs
 
 **URLs fail validation:**
+
 - Check mirror URLs are accessible
 - Try a different mirror
 - Use `--skip-validation` for testing (not recommended for production)

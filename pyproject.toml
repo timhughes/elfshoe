@@ -9,7 +9,7 @@ description = "Automated, validated, multi-architecture iPXE boot menu generatio
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
-authors = [{ name = "elfshoe Contributors" }]
+authors = [{ name = 'Tim Hughes', email = 'thughes@thegoldfish.org' },]
 keywords = ["ipxe", "pxe", "boot", "menu", "network-boot", "elfshoe"]
 classifiers = [
     "Development Status :: 4 - Beta",

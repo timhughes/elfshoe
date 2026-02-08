@@ -18,6 +18,7 @@ Managing iPXE menus manually is painful:
 - **Testing overhead**: Manually checking each URL takes forever, so you skip it
 
 elfshoe solves this by making menu generation:
+
 - **Automatic** - Fetches latest versions from official metadata
 - **Validated** - Verifies every URL before adding to menu
 - **Repeatable** - Same config always produces working menus
@@ -26,17 +27,21 @@ elfshoe solves this by making menu generation:
 ## Who is this for?
 
 ### Homelab enthusiasts
+
 Run a single command and get an up-to-date boot menu with the latest distro versions. No more hunting for kernel URLs.
 
 ### System administrators
+
 Generate consistent boot menus across environments. Configuration-as-code means you can version control, review changes, and automate deployments.
 
 ### Infrastructure teams
+
 Integrate into CI/CD pipelines. Test menu changes before deployment. Extend with custom distributions for your internal OS images.
 
 ## What makes this different?
 
 ### Traditional iPXE menus
+
 ```ipxe
 # Manually maintained, hope it works
 :fedora
@@ -46,11 +51,13 @@ boot
 ```
 
 **Problems:**
+
 - Version hardcoded (39 might be outdated)
 - No validation (URL might be broken)
 - No reusability (copy-paste for each distro)
 
 ### With elfshoe
+
 ```yaml
 distributions:
   fedora:
@@ -65,6 +72,7 @@ distributions:
 ```
 
 **Benefits:**
+
 - Automatically detects latest version (e.g., 41)
 - Validates kernel and initrd URLs exist
 - One config block = infinite menus
@@ -89,21 +97,27 @@ graph LR
 ## Key Features
 
 ### 🔄 Dynamic Version Detection
+
 Never hardcode versions again. Fedora, Debian, and other metadata providers automatically supply the latest stable versions.
 
 ### ✅ URL Validation
+
 Every kernel, initrd, and boot file is checked before being added to your menu. Catch broken mirrors before your users do.
 
 ### 🎯 Modular Architecture
+
 Plugin system makes adding new distributions straightforward. Write one Python class, register it, done.
 
 ### 🚀 Fast Mode
+
 Skip validation when iterating on menu layout. Re-validate when you're ready to deploy.
 
 ### 📝 Custom Templates
+
 Jinja2 templates mean full control over menu appearance and behavior. Override defaults or build entirely custom layouts.
 
 ### 🏗️ Modern Tooling
+
 Built with Hatch for reproducible environments. Full test suite. Markdown-linted documentation. Type hints throughout.
 
 ## Getting Started
@@ -118,21 +132,27 @@ Or jump straight to the [Reference](reference.md) for command and configuration 
 ## FAQ
 
 ### Does this replace iPXE?
+
 No. This generates iPXE menu files. You still need an iPXE server to serve them.
 
 ### What distributions are supported?
+
 Currently: Fedora (dynamic versions), plus static configs for Debian, CentOS, netboot.xyz. Adding new ones takes ~50 lines of Python.
 
 ### Can I use this in production?
+
 Yes. URL validation ensures menus work before deployment. Many users run this in homelabs and small datacenters.
 
 ### Does it work with UEFI?
+
 Yes, iPXE menus work with both BIOS and UEFI. This tool is menu-generation only—your iPXE server setup determines boot mode.
 
 ### Can I add my own custom OS images?
+
 Absolutely. Static distributions support arbitrary URLs. For internal images, add them as static entries in your config.
 
 ### How do I contribute?
+
 See the [Contributing Guide](developer/contributing.md) for development setup, testing, and how to add new distribution plugins.
 
 ---
