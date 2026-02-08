@@ -10,7 +10,7 @@ Before using elfshoe, you need:
    - See the [Server Setup Guide](server-setup.md) for complete instructions
    - Includes getting iPXE boot files, configuring DHCP/TFTP, and setting up HTTP delivery
 
-2. **Python 3.7 or higher** - For running elfshoe
+2. **Python 3.10 or higher** - For running elfshoe (it probably works on earlier but is untested)
 3. **Network boot enabled** - On client machines (BIOS/UEFI settings)
 
 **New to network booting?** Start with the [Server Setup Guide](server-setup.md) to get your infrastructure ready.
