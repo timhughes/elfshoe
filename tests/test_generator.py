@@ -1,4 +1,4 @@
-"""Tests for menu generation functionality."""
+"""Tests for MenuGenerator class (core/generator.py)."""
 
 from elfshoe.core import BootEntry, DistributionMenu, MenuGenerator
 

@@ -1,4 +1,4 @@
-"""Tests for URL validation functionality."""
+"""Tests for URLValidator class (core/validator.py)."""
 
 from unittest.mock import MagicMock, Mock, patch
 

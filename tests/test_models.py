@@ -1,4 +1,4 @@
-"""Unit tests for iPXE menu generator core functionality."""
+"""Tests for core data models (BootEntry and DistributionMenu)."""
 
 from elfshoe.core import BootEntry, DistributionMenu
 
