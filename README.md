@@ -6,13 +6,6 @@
 
 ## Features
 
-- **🔧 Configuration-driven** - Define distributions and boot options in YAML
-- **🔄 Dynamic version detection** - Automatically fetch latest versions from metadata
-- **✅ URL validation** - Verify boot files exist before adding to menu
-- **📝 Custom templates** - Jinja2-based templates, easy to customize
-- **🚀 Fast mode** - Skip validation for quick regeneration
-- **🎯 Modular architecture** - Plugin system for adding new distributions
-- **🏗️ Modern build system** - Uses Hatch for packaging and environments
 
 ## Quick Start
 
@@ -45,16 +38,9 @@ hatch shell
 
 ### Requirements
 
-- Python >= 3.7
-- PyYAML >= 6.0
-- Jinja2 >= 3.0
 
 ## Documentation
 
-- **[Getting Started](https://timhughes.github.io/elfshoe/getting-started/)** - Create your first boot menu
-- **[Server Setup](https://timhughes.github.io/elfshoe/server-setup/)** - Configure DHCP, TFTP, and HTTP infrastructure
-- **[Reference](https://timhughes.github.io/elfshoe/reference/)** - Commands and configuration
-- **[Architecture](https://timhughes.github.io/elfshoe/developer/architecture/)** - Technical design
 
 ## Example Configuration
 
@@ -70,5 +56,19 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Credits
 
-- Built with [iPXE](https://ipxe.org/) - open source network boot firmware
+
+## Development — running tests with Hatch
+
+Install `hatch` and run the test environments locally. The project provides per-interpreter environments:
+
+```bash
+python -m pip install --upgrade pip hatch
+# Run tests for a single environment (example: py311)
+hatch run -e py311 test
+
+# Or run all supported envs in sequence
+hatch run -e py311 test && hatch run -e py312 test && hatch run -e py313 test
+```
+
+The GitHub Actions CI runs the test matrix in parallel across Python 3.11–3.13.
 - Uses [Hatch](https://hatch.pypa.io/) for modern Python packaging
