@@ -1,0 +1,110 @@
+# iPXE Menu Generator Configuration
+# Complete example showing all features
+
+# Main menu settings
+menu:
+  title: "Network Boot Menu"
+  default_item: "fedora_menu"
+  timeout: 30000  # milliseconds (30 seconds)
+  error_timeout: 30000  # milliseconds - how long to show errors before returning to menu
+
+# Distribution configurations
+# Each distribution can be either "dynamic" (auto-fetch versions) or "static" (manual versions)
+distributions:
+  
+  # Example 1: Dynamic distribution with metadata provider
+  # Fedora versions are fetched automatically from releases.json
+  fedora:
+    enabled: true
+    label: "Fedora"
+    type: "dynamic"
+    metadata_provider: "fedora"  # Use Fedora metadata fetcher
+    metadata_url: "https://fedoraproject.org/releases.json"
+    
+    # Metadata filters control which versions/architectures to include
+    metadata_filter:
+      variant: "Server"  # Only Server variant (other options: Workstation, Cloud, etc.)
+      architectures: [x86_64, aarch64]  # Fetch these architectures from metadata
+      latest: 3  # Only show 3 most recent versions
+    
+    # Architecture name mapping: iPXE uses different names than distributions
+    arch_map:
+      arm64: aarch64  # Map iPXE "arm64" to Fedora's "aarch64"
+      x86_64: x86_64  # iPXE and Fedora both use "x86_64"
+    
+    # URL template with {version} and {arch} placeholders
+    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/{arch}/os"
+    
+    boot_files:
+      kernel: "images/pxeboot/vmlinuz"
+      initrd: "images/pxeboot/initrd.img"
+    
+    boot_params: "inst.repo={base_url}/"
+  
+  # Example 2: Static distribution without architecture mapping
+  # CentOS versions are specified manually
+  centos:
+    enabled: true
+    label: "CentOS Stream"
+    type: "static"
+    
+    # Manually specify versions and their supported architectures
+    versions:
+      - version: "10"
+        architectures: [x86_64]  # Stream 10 only supports x86_64 currently
+      - version: "9"
+        architectures: [x86_64, arm64]  # Stream 9 supports both
+    
+    url_template: "http://mirror.stream.centos.org/{version}-stream/BaseOS/{arch}/os"
+    
+    boot_files:
+      kernel: "images/pxeboot/vmlinuz"
+      initrd: "images/pxeboot/initrd.img"
+    
+    boot_params: "inst.repo={base_url}/"
+  
+  # Example 3: Static distribution with arch_map and release names
+  # Debian uses different architecture names than iPXE
+  debian:
+    enabled: true
+    label: "Debian"
+    type: "static"
+    
+    # Debian calls x86_64 "amd64" - use arch_map to translate
+    arch_map:
+      x86_64: amd64  # iPXE "x86_64" → Debian "amd64"
+      arm64: arm64   # Both use "arm64"
+    
+    versions:
+      - version: "bookworm"
+        name: "12 Bookworm"  # Optional: human-friendly release name
+        architectures: [x86_64, arm64]
+      - version: "trixie"
+        name: "13 Trixie"
+        architectures: [x86_64, arm64]
+    
+    url_template: "http://deb.debian.org/debian/dists/{version}/main/installer-{arch}/current/images/netboot/debian-installer/{arch}"
+    
+    boot_files:
+      kernel: "linux"
+      initrd: "initrd.gz"
+    
+    boot_params: ""
+
+# Additional menu items (non-distribution options)
+additional_items:
+  # Chain to another iPXE script
+  - id: "netboot"
+    label: "netboot.xyz"
+    type: "chain"
+    url: "http://boot.netboot.xyz"
+  
+  # Open iPXE shell
+  - id: "shell"
+    label: "iPXE Shell"
+    type: "shell"
+  
+  # Exit to BIOS/UEFI
+  - id: "exit"
+    label: "Exit to BIOS"
+    type: "exit"
