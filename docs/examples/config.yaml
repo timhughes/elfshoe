@@ -16,9 +16,12 @@ distributions:
     metadata_provider: "fedora"  # Use Fedora metadata fetcher
     metadata_url: "https://fedoraproject.org/releases.json"
     metadata_filter:
-      variant: "Server"
-      arch: "x86_64"
-    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/x86_64/os"
+      variant: "Server"  # Note: arch filter is ignored to support multi-arch
+    # Multi-architecture support
+    architectures: [x86_64, arm64]  # Supported architectures
+    arch_map:
+      arm64: aarch64  # Map iPXE arm64 -> Fedora aarch64
+    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/{arch}/os"
     boot_files:
       kernel: "images/pxeboot/vmlinuz"
       initrd: "images/pxeboot/initrd.img"

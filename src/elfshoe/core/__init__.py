@@ -6,7 +6,15 @@ menu generation.
 """
 
 from .generator import MenuGenerator
-from .models import BootEntry, DistributionMenu
+from .models import (
+    BootEntry,
+    DistributionMenu,
+    DEFAULT_ARCH_MAPS,
+    ARCH_X86_64,
+    ARCH_ARM64,
+    ARCH_I386,
+    ARCH_ARM,
+)
 from .validator import URLValidator
 
 __all__ = [
@@ -14,4 +22,9 @@ __all__ = [
     "DistributionMenu",
     "URLValidator",
     "MenuGenerator",
+    "DEFAULT_ARCH_MAPS",
+    "ARCH_X86_64",
+    "ARCH_ARM64",
+    "ARCH_I386",
+    "ARCH_ARM",
 ]

@@ -58,6 +58,7 @@ class MenuGenerator:
             dist_dict = {
                 "id": menu.id,
                 "label": menu.label,
+                "architectures": menu.architectures,
                 "entries": [
                     {
                         "id": entry.id,
@@ -65,6 +66,7 @@ class MenuGenerator:
                         "kernel_url": entry.kernel_url,
                         "initrd_url": entry.initrd_url,
                         "boot_params": entry.boot_params,
+                        "arch_urls": entry.arch_urls,  # Include multi-arch URLs
                     }
                     for entry in menu.entries
                 ],

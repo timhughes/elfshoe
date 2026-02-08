@@ -3,19 +3,44 @@
 
 :{{ menu.id }}
 menu {{ menu.label.split('(')[0].strip() }} - Select Version
-{%- for entry in menu.entries %}
+{% for entry in menu.entries -%}
 item {{ entry.id }} {{ entry.label }}
-{%- endfor %}
+{% endfor -%}
 item --gap --
 item back_{{ menu.id }} Back to main menu
 choose --default {{ menu.entries[0].id }} target && goto ${target}
-
-{%- for entry in menu.entries %}
+{% for entry in menu.entries %}
 
 :{{ entry.id }}
+{% if entry.arch_urls -%}
+# Multi-architecture support - detect client architecture
+{% for arch in entry.arch_urls.keys() -%}
+iseq ${buildarch} {{ arch }} && goto {{ entry.id }}_{{ arch }} ||
+{% endfor -%}
+goto unsupported_arch_{{ menu.id }}
+
+{% for arch, urls in entry.arch_urls.items() %}
+:{{ entry.id }}_{{ arch }}
+initrd {{ urls.initrd }}
+chain {{ urls.kernel }} initrd={{ 'initrd.img' if urls.initrd.endswith('.img') else 'initrd.gz' }}{% if urls.boot_params %} {{ urls.boot_params }}{% endif %} || goto {{ menu.id }}_error
+{% endfor -%}
+{% else -%}
+# Single architecture
 initrd {{ entry.initrd_url }}
 chain {{ entry.kernel_url }} initrd={{ 'initrd.img' if entry.initrd_url.endswith('.img') else 'initrd.gz' }}{% if entry.boot_params %} {{ entry.boot_params }}{% endif %} || goto {{ menu.id }}_error
-{%- endfor %}
+{% endif -%}
+{% endfor -%}
+{% if menu.architectures|length > 1 %}
+
+:unsupported_arch_{{ menu.id }}
+echo
+echo ERROR: Architecture ${buildarch} is not supported for this distribution
+echo Supported architectures: {{ menu.architectures|join(', ') }}
+echo
+echo Press any key to return to menu...
+prompt --timeout {{ error_timeout }}
+goto {{ menu.id }}
+{% endif %}
 
 :{{ menu.id }}_error
 echo

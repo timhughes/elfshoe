@@ -129,6 +129,7 @@ class IPXEValidator:
             "prompt",
             "read",
             "isset",
+            "iseq",  # Compare strings/variables
             "inc",
             "dec",
         }
