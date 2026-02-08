@@ -1,36 +1,44 @@
 # elfshoe - Getting Started
 
-## What is elfshoe?
+This guide walks you through creating your first iPXE boot menu with elfshoe.
 
-elfshoe creates bootable network menus for iPXE. Point users to operating system installers (Fedora, CentOS, Debian) or tools (netboot.xyz) via PXE network boot.
+## Prerequisites
+
+Before using elfshoe, you need:
+
+1. **Server infrastructure** - DHCP, TFTP, and HTTP servers configured for network booting
+   - See the [Server Setup Guide](server-setup.md) for complete instructions
+   - Includes getting iPXE boot files, configuring DHCP/TFTP, and setting up HTTP delivery
+
+2. **Python 3.7 or higher** - For running elfshoe
+3. **Network boot enabled** - On client machines (BIOS/UEFI settings)
+
+**New to network booting?** Start with the [Server Setup Guide](server-setup.md) to get your infrastructure ready.
 
 ## How It Works
 
 1. **Configure** - Define OS distributions in `config.yaml`
-2. **Generate** - Run `elfshoe` to create `menu.ipxe`
-3. **Deploy** - Serve `menu.ipxe` from your web server
+2. **Generate** - Run `elfshoe` to create `elfshoe.ipxe`
+3. **Deploy** - Serve `elfshoe.ipxe` from your web server
 4. **Boot** - Client machines PXE boot and display your menu
 
 ## Quick Example
 
 ### 1. Create config.yaml
 
-```yaml
-menu:
-  title: "Boot Menu"
-  timeout: 30000
+Start with the example configuration:
 
-distributions:
-  fedora:
-    enabled: true
-    type: "dynamic"
-    metadata_provider: "fedora"
-    metadata_url: "https://fedoraproject.org/releases.json"
-    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/x86_64/os"
-    boot_files:
-      kernel: "images/pxeboot/vmlinuz"
-      initrd: "images/pxeboot/initrd.img"
-    boot_params: "inst.repo={base_url}/"
+```bash
+# Copy the example config
+cp docs/examples/config.yaml config.yaml
+
+# Or view it at: docs/examples/config.yaml
+```
+
+**Example configuration:**
+
+```yaml
+--8<-- "docs/examples/config.yaml"
 ```
 
 ### 2. Generate menu
@@ -41,24 +49,58 @@ elfshoe
 
 ### 3. Result
 
-You get a `menu.ipxe` file that looks like:
+You get a `elfshoe.ipxe` file (91 lines) that looks like:
 
 ```ipxe
 #!ipxe
+dhcp
 
 :start
-menu Boot Menu
-item fedora_40 Fedora 40 Server
-item fedora_39 Fedora 39 Server
-choose selected
-goto ${selected}
+menu Network Boot Menu
+item --gap -- Operating Systems:
+item fedora_menu Boot Fedora (multiple versions)
+item centos_menu Boot CentOS Stream (multiple versions)
+item debian_menu Boot Debian (multiple versions)
+item --gap -- Other Options:
+item netboot netboot.xyz
+item --gap -- Advanced:
+item shell iPXE Shell
+item exit Exit to BIOS
+choose --default fedora_menu --timeout 30000 target && goto ${target}
 
-:fedora_40
-echo Booting Fedora 40 Server...
-initrd http://download.fedoraproject.org/...initrd.img
-kernel http://download.fedoraproject.org/...vmlinuz initrd=initrd.img inst.repo=...
-boot
+:fedora_menu
+menu Boot Fedora - Select Version
+item fedora_43 Boot Fedora (multiple versions) 43
+item fedora_42 Boot Fedora (multiple versions) 42
+item fedora_41 Boot Fedora (multiple versions) 41
+item --gap --
+item back_fedora_menu Back to main menu
+choose --default fedora_43 target && goto ${target}
+
+:fedora_43
+initrd http://download.fedoraproject.org/.../43/.../initrd.img
+chain http://download.fedoraproject.org/.../43/.../vmlinuz \
+  initrd=initrd.img inst.repo=http://... || goto fedora_menu_error
+
+:fedora_menu_error
+echo
+echo Boot failed! Press any key to return to menu...
+prompt --timeout 30000
+goto fedora_menu
+
+# ... similar sections for CentOS and Debian ...
+
+:netboot
+chain --autofree http://boot.netboot.xyz || goto start
+
+:shell
+shell
+
+:exit
+exit
 ```
+
+The generator creates a hierarchical menu structure with sub-menus for each distribution, error handling, and navigation.
 
 ## Key Concepts
 
@@ -95,7 +137,7 @@ Use fast mode during development, validated mode before deployment.
 ## Architecture Overview
 
 ```
-config.yaml → Builder → MenuGenerator → menu.ipxe
+config.yaml → Builder → MenuGenerator → elfshoe.ipxe
                 ↓
           [Validator]
                 ↓
@@ -140,7 +182,7 @@ boot_params: "console=ttyS0,115200 inst.ks=http://server/kickstart.cfg"
 elfshoe --skip-validation
 
 # Check generated menu
-cat menu.ipxe
+cat elfshoe.ipxe
 
 # Validate all URLs work
 elfshoe
@@ -161,13 +203,50 @@ elfshoe
 
 ## Next Steps
 
-- **[Quick Reference](reference.md)** - Commands and configuration reference
+### Deploy Your Menu
+
+Copy the generated `elfshoe.ipxe` to your HTTP server:
+
+```bash
+# Example: Copy to nginx web root
+sudo cp elfshoe.ipxe /var/www/pxe/
+
+# Or to Apache
+sudo cp elfshoe.ipxe /var/www/html/pxe/
+```
+
+**Don't have a server set up yet?** See the [Server Setup Guide](server-setup.md) for:
+- Installing and configuring DHCP/TFTP servers (dnsmasq, ISC DHCP, Windows)
+- Setting up HTTP servers (nginx, Apache)
+- Getting iPXE boot files
+- Complete deployment instructions
+
+### Test Network Booting
+
+1. **Enable network boot** in your client's BIOS/UEFI settings
+2. **Boot the client** - it should:
+   - Get an IP from DHCP
+   - Download iPXE bootloader via TFTP
+   - Load your elfshoe menu via HTTP
+   - Display your boot options
+
+### Troubleshooting
+
+**Menu doesn't appear:**
+- Verify HTTP server is accessible: `curl http://your-server/elfshoe.ipxe`
+- Check client can reach server (ping, firewall rules)
+- Review DHCP/TFTP logs
+
+**URLs fail validation:**
+- Check mirror URLs are accessible
+- Try a different mirror
+- Use `--skip-validation` for testing (not recommended for production)
+
+For infrastructure issues, see the [Server Setup Guide - Troubleshooting](server-setup.md#troubleshooting).
+
+### Learn More
+
+- **[Reference](reference.md)** - Complete command and configuration reference
+- **[Server Setup](server-setup.md)** - DHCP, TFTP, HTTP configuration details
 - **[Adding Distributions](developer/adding_distributions.md)** - Extend with new OSes
-- **[Architecture](developer/architecture.md)** - System design details
-- **[Troubleshooting](reference.md#troubleshooting)** - Common issues and solutions
-
-## Need Help?
-
-- Check the [Quick Reference](reference.md) for common commands
-- Review [Troubleshooting](reference.md#troubleshooting) for common issues
-- See [Contributing](developer/contributing.md) if you want to add features
+- **[Contributing](developer/contributing.md)** - Add features or fix bugs

@@ -51,6 +51,7 @@ docs = [
 
 [project.scripts]
 elfshoe = "elfshoe.cli:main"
+ipxelint = "elfshoe.ipxelint:main"
 
 [project.urls]
 Homepage = "https://github.com/timhughes/elfshoe"

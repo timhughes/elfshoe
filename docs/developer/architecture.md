@@ -25,7 +25,7 @@ ipxe/
 │       │   ├── fedora.py             # Fedora implementation
 │       │   └── [future: centos.py, debian.py, windows.py, ...]
 │       └── templates/                # Jinja2 templates
-│           ├── main_menu.ipxe.j2
+│           ├── main_elfshoe.ipxe.j2
 │           ├── distribution_submenus.ipxe.j2
 │           └── additional_items.ipxe.j2
 ├── tests/                            # Test suite
@@ -34,7 +34,7 @@ ipxe/
 │   ├── test_url_validator.py        # Validation tests
 │   └── test_menu_generator.py        # Generation tests
 ├── config.yaml                       # Main configuration
-└── menu.ipxe                         # Generated output
+└── elfshoe.ipxe                         # Generated output
 
 ```
 
@@ -153,7 +153,7 @@ METADATA_PROVIDERS = {
        │
        ▼
 ┌──────────────┐
-│  menu.ipxe   │
+│  elfshoe.ipxe   │
 └──────────────┘
 ```
 
@@ -344,4 +344,4 @@ The refactoring (February 2026) moved from a monolithic design to modular:
 - CLI interface unchanged
 - Configuration format mostly unchanged (only `metadata_provider` added)
 - Template format unchanged
-- Generated menu.ipxe format unchanged
+- Generated elfshoe.ipxe format unchanged

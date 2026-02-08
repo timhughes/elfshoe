@@ -108,7 +108,10 @@ Built with Hatch for reproducible environments. Full test suite. Markdown-linted
 
 ## Getting Started
 
-Ready to automate your boot menu? See the [Getting Started Guide](getting-started.md) for a complete walkthrough.
+Ready to automate your boot menu? 
+
+1. **Set up infrastructure** - See the [Server Setup Guide](server-setup.md) to configure DHCP, TFTP, and HTTP servers
+2. **Generate your menu** - Follow the [Getting Started Guide](getting-started.md) for a complete walkthrough
 
 Or jump straight to the [Reference](reference.md) for command and configuration details.
 
@@ -136,6 +139,7 @@ See the [Contributing Guide](developer/contributing.md) for development setup, t
 
 ## Links
 
-- **[Getting Started](getting-started.md)** - Complete walkthrough with examples
+- **[Getting Started](getting-started.md)** - Create your first boot menu
+- **[Server Setup](server-setup.md)** - Configure DHCP, TFTP, and HTTP infrastructure
 - **[Reference](reference.md)** - Commands and configuration reference
 - **[Architecture](developer/architecture.md)** - Technical design and plugin system

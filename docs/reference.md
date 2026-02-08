@@ -1,5 +1,11 @@
 # elfshoe - Reference
 
+## Command-Line Tools
+
+### elfshoe
+
+The `elfshoe` command generates iPXE boot menu scripts from YAML configuration files.
+
 ## Command Line Usage
 
 ```bash
@@ -10,7 +16,7 @@ elfshoe
 elfshoe --skip-validation
 
 # Custom config and output files
-elfshoe -c custom-config.yaml -o custom-menu.ipxe
+elfshoe -c custom-config.yaml -o custom-elfshoe.ipxe
 
 # Quiet mode (no output unless errors)
 elfshoe --quiet
@@ -22,7 +28,7 @@ elfshoe --help
 ### Command Options
 
 - `-c, --config FILE` - Path to config file (default: `config.yaml`)
-- `-o, --output FILE` - Output file path (default: `menu.ipxe`)
+- `-o, --output FILE` - Output file path (default: `elfshoe.ipxe`)
 - `--skip-validation` - Skip URL validation for faster generation
 - `--quiet` - Quiet mode, only show errors
 - `--help` - Show help message
@@ -34,10 +40,66 @@ elfshoe [OPTIONS]
 
 Options:
   -c, --config FILE     Configuration file (default: config.yaml)
-  -o, --output FILE     Output file (default: menu.ipxe)
+  -o, --output FILE     Output file (default: elfshoe.ipxe)
   --no-validate         Skip URL validation (faster)
   --quiet              Minimal output
   --help               Show help message
+```
+
+### ipxelint
+
+The `ipxelint` tool validates iPXE scripts for syntax errors and common mistakes.
+
+#### Basic Usage
+
+```bash
+# Validate a single file
+ipxelint elfshoe.ipxe
+
+# Validate multiple files
+ipxelint *.ipxe
+
+# Treat warnings as errors (CI-friendly)
+ipxelint --strict elfshoe.ipxe
+
+# Only show errors
+ipxelint --quiet elfshoe.ipxe
+```
+
+#### What It Checks
+
+- **Shebang**: Ensures script starts with `#!ipxe`
+- **Menu balance**: Warns if menu/choose statements are unbalanced
+- **Label references**: Detects undefined label references in goto statements
+- **Command syntax**: Warns about unknown or potentially misspelled commands
+
+#### Exit Codes
+
+- `0`: All files passed validation
+- `1`: At least one file had errors (or warnings with `--strict`)
+
+#### Example Output
+
+```
+✓ elfshoe.ipxe: OK
+
+⚠️  custom.ipxe: WARNINGS
+  Line 12: Unknown or potentially misspelled command: 'slepe'
+
+❌ broken.ipxe: FAILED
+  Line 1: Missing or invalid #!ipxe shebang
+  Line 15: Reference to undefined label: 'non_existent'
+```
+
+## Command Line Options Full Reference
+
+```bash
+-c, --config FILE      # Config file (default: config.yaml)
+-o, --output FILE      # Output file (default: elfshoe.ipxe)
+--no-validate          # Skip URL validation (faster)
+-q, --quiet            # Minimal output
+--version              # Show version
+  -h, --help             # Show help
 ```
 
 ## Configuration File Structure
@@ -114,7 +176,7 @@ boot_params: "inst.text inst.repo={base_url}/"
 
 ```bash
 -c, --config FILE      # Config file (default: config.yaml)
--o, --output FILE      # Output file (default: menu.ipxe)
+-o, --output FILE      # Output file (default: elfshoe.ipxe)
 --no-validate          # Skip URL validation (faster)
 -q, --quiet            # Minimal output
 --version              # Show version
@@ -127,7 +189,7 @@ boot_params: "inst.text inst.repo={base_url}/"
 Project Root/
 ├── config.yaml              # Main configuration
 ├── config.example.yaml      # Example config
-├── menu.ipxe                # Generated menu (output)
+├── elfshoe.ipxe                # Generated menu (output)
 ├── src/elfshoe/       # Package source
 │   ├── core/                # Core components
 │   ├── distributions/       # Distribution plugins
@@ -224,8 +286,8 @@ elfshoe
 # Verify your web server can serve the files
 curl http://your-server/path/to/vmlinuz
 
-# Check the generated menu.ipxe file for correct URLs
-cat menu.ipxe | grep -A5 "boot_fedora"
+# Check the generated elfshoe.ipxe file for correct URLs
+cat elfshoe.ipxe | grep -A5 "boot_fedora"
 ```
 
 ## Performance
@@ -250,7 +312,7 @@ cat menu.ipxe | grep -A5 "boot_fedora"
 ### How It Works
 1. Client machine boots via PXE
 2. DHCP server provides iPXE binary location
-3. iPXE loads and fetches `menu.ipxe` from your web server
+3. iPXE loads and fetches `elfshoe.ipxe` from your web server
 4. User selects OS from menu
 5. iPXE downloads kernel and initrd
 6. Boot proceeds with specified parameters

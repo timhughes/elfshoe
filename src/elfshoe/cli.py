@@ -55,7 +55,7 @@ Examples:
         help="Configuration file (default: config.yaml)",
     )
     parser.add_argument(
-        "-o", "--output", type=Path, default="menu.ipxe", help="Output file (default: menu.ipxe)"
+        "-o", "--output", type=Path, default="elfshoe.ipxe", help="Output file (default: elfshoe.ipxe)"
     )
     parser.add_argument(
         "--no-validate",

@@ -3,10 +3,8 @@
 **Automated iPXE boot menu generation - where elves craft your network boot menus.**
 
 [![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://timhughes.github.io/elfshoe/)
-[![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-## ✨ Features
+## Features
 
 - **🔧 Configuration-driven** - Define distributions and boot options in YAML
 - **🔄 Dynamic version detection** - Automatically fetch latest versions from metadata
@@ -14,81 +12,63 @@
 - **📝 Custom templates** - Jinja2-based templates, easy to customize
 - **🚀 Fast mode** - Skip validation for quick regeneration
 - **🎯 Modular architecture** - Plugin system for adding new distributions
+- **🏗️ Modern build system** - Uses Hatch for packaging and environments
 
-## 🚀 Quick Start
-
-```bash
-# Generate menu with validation
-make validate
-
-# Fast generation (skip validation)
-make fast
-```
-
-Or directly:
+## Quick Start
 
 ```bash
-python3 -m elfshoe
+# 1. Copy example configuration
+cp docs/examples/config.yaml config.yaml
+
+# 2. Generate menu
+elfshoe
+
+# 3. Deploy to your HTTP server
+sudo cp elfshoe.ipxe /var/www/pxe/
 ```
 
-## 📦 Installation
+## Installation
 
-**Development:**
+### From Source
 
 ```bash
-pip install hatch
-hatch env create
+# Clone repository
+git clone https://github.com/timhughes/elfshoe.git
+cd elfshoe
+
+# Install with pip
+pip install -e .
+
+# Or use hatch
+hatch shell
 ```
 
-**Production:**
+### Requirements
 
-```bash
-pip install elfshoeerator
-elfshoe --help
-```
+- Python >= 3.7
+- PyYAML >= 6.0
+- Jinja2 >= 3.0
 
-## 🎯 Configuration Example
+## Documentation
 
-```yaml
-menu:
-  title: "Network Boot Menu"
-  timeout: 30000
+- **[Getting Started](https://timhughes.github.io/elfshoe/getting-started/)** - Create your first boot menu
+- **[Server Setup](https://timhughes.github.io/elfshoe/server-setup/)** - Configure DHCP, TFTP, and HTTP infrastructure
+- **[Reference](https://timhughes.github.io/elfshoe/reference/)** - Commands and configuration
+- **[Architecture](https://timhughes.github.io/elfshoe/developer/architecture/)** - Technical design
 
-distributions:
-  fedora:
-    enabled: true
-    type: "dynamic"
-    metadata_provider: "fedora"
-    metadata_url: "https://fedoraproject.org/releases.json"
-    url_template: "http://download.fedoraproject.org/pub/fedora/linux/releases/{version}/Server/x86_64/os"
-    boot_files:
-      kernel: "images/pxeboot/vmlinuz"
-      initrd: "images/pxeboot/initrd.img"
-```
+## Example Configuration
 
-## 📖 Documentation
+See `docs/examples/config.yaml` for a complete working example with Fedora, CentOS, Debian, and netboot.xyz.
 
-Full documentation: **https://timhughes.github.io/elfshoe/**
+## Contributing
 
-- **[Quick Reference](https://timhughes.github.io/elfshoe/quickref/)** - Commands and configuration
-- **[Getting Started](https://timhughes.github.io/elfshoe/overview/)** - Concepts and overview
-- **[Adding Distributions](https://timhughes.github.io/elfshoe/developer/adding_distributions/)** - Extend with new OSes
-- **[Changelog](https://timhughes.github.io/elfshoe/changelog/)** - Version history
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
-## 🤝 Contributing
+## License
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
-```bash
-make test    # Run tests
-make lint    # Check code
-make format  # Format code
-```
+## Credits
 
-## 📝 License
-
-MIT License - See [LICENSE](LICENSE) for details.
-
-## 🙏 Credits
-
-Built with [Python](https://python.org), [Jinja2](https://jinja.palletsprojects.com/), [PyYAML](https://pyyaml.org/), and [Hatch](https://hatch.pypa.io/).
+- Built with [iPXE](https://ipxe.org/) - open source network boot firmware
+- Uses [Hatch](https://hatch.pypa.io/) for modern Python packaging
