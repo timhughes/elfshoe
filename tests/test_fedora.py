@@ -349,6 +349,24 @@ class TestFedoraMetadataFetcher:
         assert versions[1]["architectures"] == ["x86_64"]
 
     @patch.object(FedoraMetadataFetcher, "_fetch_metadata")
+    def test_fetch_versions_skips_beta_versions(self, mock_fetch):
+        """Test fetch_versions skips non-integer version strings like Beta releases."""
+        data = [
+            {"version": "44 Beta", "variant": "Server", "arch": "x86_64", "link": "..."},
+            {"version": "44 Beta", "variant": "Server", "arch": "aarch64", "link": "..."},
+            {"version": "43", "variant": "Server", "arch": "x86_64", "link": "..."},
+            {"version": "43", "variant": "Server", "arch": "aarch64", "link": "..."},
+        ]
+        mock_fetch.return_value = data
+
+        fetcher = FedoraMetadataFetcher()
+        versions = fetcher.fetch_versions("http://example.com/releases.json")
+
+        # '44 Beta' should be excluded; only '43' should be returned
+        assert len(versions) == 1
+        assert versions[0]["version"] == "43"
+
+    @patch.object(FedoraMetadataFetcher, "_fetch_metadata")
     def test_fetch_versions_preserves_architecture_order_with_filter(self, mock_fetch):
         """Test fetch_versions maintains filter order when architectures specified."""
         data = [

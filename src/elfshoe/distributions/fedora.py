@@ -65,9 +65,10 @@ class FedoraMetadataFetcher(AbstractMetadataFetcher):
                 arch = release["arch"]
                 version_archs[version].add(arch)
 
-        # Build version objects
+        # Build version objects, skipping non-integer versions (e.g. Beta releases)
+        integer_versions = {v for v in version_archs if v.isdigit()}
         version_objects = []
-        for version in sorted(version_archs.keys(), key=int, reverse=True):
+        for version in sorted(integer_versions, key=int, reverse=True):
             available_archs = version_archs[version]
 
             # Filter architectures if requested
