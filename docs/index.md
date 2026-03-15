@@ -2,6 +2,11 @@
 
 **Automated, validated, version-aware iPXE boot menu generation - where elves craft your network boot menus.**
 
+[![PyPI version](https://img.shields.io/pypi/v/elfshoe)](https://pypi.org/p/elfshoe)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/elfshoe)](https://pypi.org/p/elfshoe)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/elfshoe)](https://pypi.org/p/elfshoe)
+[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue)](https://timhughes.github.io/elfshoe/)
+
 ---
 
 ## What is this?
